@@ -41,6 +41,3 @@ This project is a comprehensive Personal Financial Planning System with a Node.j
 - **Static Pages:** HTML files for various features.
 - **API Client:** Centralized communication with the backend (`api-client.js`).
 - **Styles:** Custom CSS for the user interface.
-
-### [Documentation](./docs/codebase/)
-Detailed documentation on architecture, conventions, and integrations.
