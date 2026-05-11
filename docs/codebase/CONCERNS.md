@@ -6,10 +6,10 @@
 
 #### A. MongoDB Credentials Committed to Git ⚠️ CRITICAL
 
-**Location:** `backend/.env` (committed to repository)
+**Location:** `backend/.env` (REDACTED)
 
 ```
-MONGODB_URI=mongodb+srv://db_user:XLzrtWQfdyxH653E@cluster0.ic2dxk9.mongodb.net/?appName=Cluster0
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.example.mongodb.net/?appName=Cluster0
 ```
 
 **Risk:**

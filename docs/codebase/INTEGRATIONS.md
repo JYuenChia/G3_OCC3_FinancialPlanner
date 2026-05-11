@@ -51,12 +51,12 @@ await mongoose.connect(MONGODB_URI, {
 - **Optional:** `PORT` (defaults to 3000)
 - **Missing:** `.env.example` (should document required vars)
 
-**Current .env contents (SECURITY WARNING - in code):**
+**Current .env contents (REDACTED):**
 ```
-MONGODB_URI=mongodb+srv://db_user:XLzrtWQfdyxH653E@cluster0.ic2dxk9.mongodb.net/?appName=Cluster0
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.example.mongodb.net/?appName=Cluster0
 ```
 
-⚠️ **SECURITY ISSUE:** MongoDB credentials committed to git. See CONCERNS.md.
+⚠️ **SECURITY ISSUE:** Credentials must be handled via environment variables, not committed to git.
 
 ### 4) Third-Party Libraries (Integration Points)
 
