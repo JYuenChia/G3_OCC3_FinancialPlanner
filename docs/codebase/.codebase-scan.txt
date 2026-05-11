@@ -1,0 +1,356 @@
+
+=== DIRECTORY TREE (max depth 3, source files only) ===
+.DS_Store
+.gitignore
+.npm-cache
+.npm-cache/_cacache
+.npm-cache/_cacache/content-v2
+.npm-cache/_cacache/content-v2/sha512
+.npm-cache/_cacache/index-v5
+.npm-cache/_cacache/index-v5/00
+.npm-cache/_cacache/index-v5/03
+.npm-cache/_cacache/index-v5/06
+.npm-cache/_cacache/index-v5/0b
+.npm-cache/_cacache/index-v5/0e
+.npm-cache/_cacache/index-v5/11
+.npm-cache/_cacache/index-v5/12
+.npm-cache/_cacache/index-v5/13
+.npm-cache/_cacache/index-v5/14
+.npm-cache/_cacache/index-v5/1a
+.npm-cache/_cacache/index-v5/1f
+.npm-cache/_cacache/index-v5/20
+.npm-cache/_cacache/index-v5/21
+.npm-cache/_cacache/index-v5/22
+.npm-cache/_cacache/index-v5/24
+.npm-cache/_cacache/index-v5/25
+.npm-cache/_cacache/index-v5/27
+.npm-cache/_cacache/index-v5/29
+.npm-cache/_cacache/index-v5/2a
+.npm-cache/_cacache/index-v5/32
+.npm-cache/_cacache/index-v5/33
+.npm-cache/_cacache/index-v5/34
+.npm-cache/_cacache/index-v5/35
+.npm-cache/_cacache/index-v5/37
+.npm-cache/_cacache/index-v5/38
+.npm-cache/_cacache/index-v5/3a
+.npm-cache/_cacache/index-v5/3e
+.npm-cache/_cacache/index-v5/40
+.npm-cache/_cacache/index-v5/47
+.npm-cache/_cacache/index-v5/4c
+.npm-cache/_cacache/index-v5/4f
+.npm-cache/_cacache/index-v5/57
+.npm-cache/_cacache/index-v5/59
+.npm-cache/_cacache/index-v5/60
+.npm-cache/_cacache/index-v5/65
+.npm-cache/_cacache/index-v5/66
+.npm-cache/_cacache/index-v5/6b
+.npm-cache/_cacache/index-v5/6c
+.npm-cache/_cacache/index-v5/6e
+.npm-cache/_cacache/index-v5/71
+.npm-cache/_cacache/index-v5/72
+.npm-cache/_cacache/index-v5/73
+.npm-cache/_cacache/index-v5/76
+.npm-cache/_cacache/index-v5/7a
+.npm-cache/_cacache/index-v5/7d
+.npm-cache/_cacache/index-v5/7f
+.npm-cache/_cacache/index-v5/81
+.npm-cache/_cacache/index-v5/82
+.npm-cache/_cacache/index-v5/84
+.npm-cache/_cacache/index-v5/86
+.npm-cache/_cacache/index-v5/87
+.npm-cache/_cacache/index-v5/8c
+.npm-cache/_cacache/index-v5/8d
+.npm-cache/_cacache/index-v5/90
+.npm-cache/_cacache/index-v5/92
+.npm-cache/_cacache/index-v5/93
+.npm-cache/_cacache/index-v5/95
+.npm-cache/_cacache/index-v5/96
+.npm-cache/_cacache/index-v5/99
+.npm-cache/_cacache/index-v5/9f
+.npm-cache/_cacache/index-v5/a0
+.npm-cache/_cacache/index-v5/a1
+.npm-cache/_cacache/index-v5/a5
+.npm-cache/_cacache/index-v5/ab
+.npm-cache/_cacache/index-v5/af
+.npm-cache/_cacache/index-v5/b0
+.npm-cache/_cacache/index-v5/b3
+.npm-cache/_cacache/index-v5/b4
+.npm-cache/_cacache/index-v5/b5
+.npm-cache/_cacache/index-v5/b9
+.npm-cache/_cacache/index-v5/bd
+.npm-cache/_cacache/index-v5/be
+.npm-cache/_cacache/index-v5/bf
+.npm-cache/_cacache/index-v5/c1
+.npm-cache/_cacache/index-v5/c3
+.npm-cache/_cacache/index-v5/c7
+.npm-cache/_cacache/index-v5/c9
+.npm-cache/_cacache/index-v5/cd
+.npm-cache/_cacache/index-v5/ce
+.npm-cache/_cacache/index-v5/cf
+.npm-cache/_cacache/index-v5/d5
+.npm-cache/_cacache/index-v5/dd
+.npm-cache/_cacache/index-v5/e0
+.npm-cache/_cacache/index-v5/e1
+.npm-cache/_cacache/index-v5/e2
+.npm-cache/_cacache/index-v5/e6
+.npm-cache/_cacache/index-v5/e7
+.npm-cache/_cacache/index-v5/e9
+.npm-cache/_cacache/index-v5/ea
+.npm-cache/_cacache/index-v5/eb
+.npm-cache/_cacache/index-v5/ec
+.npm-cache/_cacache/index-v5/ed
+.npm-cache/_cacache/index-v5/ee
+.npm-cache/_cacache/index-v5/ef
+.npm-cache/_cacache/index-v5/f0
+.npm-cache/_cacache/index-v5/f3
+.npm-cache/_cacache/index-v5/f5
+.npm-cache/_cacache/index-v5/f6
+.npm-cache/_cacache/index-v5/f7
+.npm-cache/_cacache/index-v5/fb
+.npm-cache/_cacache/index-v5/fd
+.npm-cache/_cacache/index-v5/ff
+.npm-cache/_update-notifier-last-checked
+README.md
+backend
+backend/.env
+backend/.npm-cache
+backend/.npm-cache/_cacache
+backend/.npm-cache/_cacache/content-v2
+backend/.npm-cache/_cacache/index-v5
+backend/.npm-cache/_update-notifier-last-checked
+backend/package-lock.json
+backend/package.json
+backend/src
+backend/src/db.js
+backend/src/middleware
+backend/src/middleware/auth.middleware.js
+backend/src/repositories
+backend/src/repositories/calculations.repository.js
+backend/src/repositories/goals.repository.js
+backend/src/repositories/revoked-token.repository.js
+backend/src/repositories/user.repository.js
+backend/src/routes
+backend/src/routes/auth.routes.js
+backend/src/routes/calculator.routes.js
+backend/src/routes/goals.routes.js
+backend/src/routes/index.js
+backend/src/routes/market.routes.js
+backend/src/routes/recommendations.routes.js
+backend/src/routes/user.routes.js
+backend/src/schemas
+backend/src/schemas/auth.schema.js
+backend/src/schemas/calculation.schema.js
+backend/src/schemas/goal.schema.js
+backend/src/schemas/revoked-token.schema.js
+backend/src/schemas/user.schema.js
+backend/src/server.js
+backend/src/utils
+backend/src/utils/auth.util.js
+docs
+docs/codebase
+docs/codebase/.codebase-scan.txt
+frontend
+frontend/.npm-cache
+frontend/.npm-cache/_update-notifier-last-checked
+frontend/api-client.js
+frontend/calculator.html
+frontend/calculator.js
+frontend/delete-account.html
+frontend/dom-utils.js
+frontend/goals.html
+frontend/index.html
+frontend/login.html
+frontend/market-insights.html
+frontend/profile.html
+frontend/recommendations.html
+frontend/register.html
+frontend/styles.css
+frontend/update-password.html
+package-lock.json
+package.json
+
+=== STACK DETECTION (manifest files) ===
+
+--- package-lock.json ---
+{
+  "name": "personal-financial-planning-system",
+  "lockfileVersion": 3,
+  "requires": true,
+  "packages": {
+    "": {
+      "dependencies": {
+        "express": "^5.2.1"
+      }
+    },
+    "node_modules/accepts": {
+      "version": "2.0.0",
+      "resolved": "https://registry.npmjs.org/accepts/-/accepts-2.0.0.tgz",
+      "integrity": "sha512-5cvg6CtKwfgdmVqY1WIiXKc3Q1bkRqGLi+2W/6ao+6Y7gu/RCwRuAhGEzh5B4KlszSuTLgZYuqFqo5bImjNKng==",
+      "license": "MIT",
+      "dependencies": {
+        "mime-types": "^3.0.0",
+        "negotiator": "^1.0.0"
+      },
+      "engines": {
+        "node": ">= 0.6"
+      }
+    },
+    "node_modules/body-parser": {
+      "version": "2.2.2",
+      "resolved": "https://registry.npmjs.org/body-parser/-/body-parser-2.2.2.tgz",
+      "integrity": "sha512-oP5VkATKlNwcgvxi0vM0p/D3n2C3EReYVX+DNYs5TjZFn/oQt2j+4sVJtSMr18pdRr8wjTcBl6LoV+FUwzPmNA==",
+      "license": "MIT",
+      "dependencies": {
+        "bytes": "^3.1.2",
+        "content-type": "^1.0.5",
+        "debug": "^4.4.3",
+        "http-errors": "^2.0.0",
+        "iconv-lite": "^0.7.0",
+        "on-finished": "^2.4.1",
+        "qs": "^6.14.1",
+        "raw-body": "^3.0.1",
+        "type-is": "^2.0.1"
+      },
+      "engines": {
+        "node": ">=18"
+      },
+      "funding": {
+        "type": "opencollective",
+        "url": "https://opencollective.com/express"
+      }
+    },
+    "node_modules/bytes": {
+      "version": "3.1.2",
+      "resolved": "https://registry.npmjs.org/bytes/-/bytes-3.1.2.tgz",
+      "integrity": "sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==",
+      "license": "MIT",
+      "engines": {
+        "node": ">= 0.8"
+      }
+    },
+    "node_modules/call-bind-apply-helpers": {
+      "version": "1.0.2",
+      "resolved": "https://registry.npmjs.org/call-bind-apply-helpers/-/call-bind-apply-helpers-1.0.2.tgz",
+      "integrity": "sha512-Sp1ablJ0ivDkSzjcaJdxEunN5/XvksFJ2sMBFfq6x0ryhQV/2b/KwFe21cMpmHtPOSij8K99/wSfoEuTObmuMQ==",
+      "license": "MIT",
+      "dependencies": {
+        "es-errors": "^1.3.0",
+        "function-bind": "^1.1.2"
+      },
+      "engines": {
+        "node": ">= 0.4"
+      }
+    },
+    "node_modules/call-bound": {
+      "version": "1.0.4",
+      "resolved": "https://registry.npmjs.org/call-bound/-/call-bound-1.0.4.tgz",
+      "integrity": "sha512-+ys997U96po4Kx/ABpBCqhA9EuxJaQWDQg7295H4hBphv3IZg0boBKuwYpt4YXp6MZ5AmZQnU/tyMTlRpaSejg==",
+      "license": "MIT",
+      "dependencies": {
+        "call-bind-apply-helpers": "^1.0.2",
+        "get-intrinsic": "^1.3.0"
+      },
+      "engines": {
+        "node": ">= 0.4"
+
+[TRUNCATED] Showing first 80 of 823 lines.
+--- package.json ---
+{
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
+
+
+=== ENTRY POINTS ===
+No common entry points found. Check 'main' or 'scripts.start' in manifest files above.
+
+=== LINTING AND FORMATTING CONFIG ===
+No linting or formatting config files found in project root.
+
+=== ENVIRONMENT VARIABLE TEMPLATES ===
+No .env.example or .env.template found. Identify required environment variables by searching the code and config for environment variable reads.
+
+=== TODO / FIXME / HACK (production code only, test dirs excluded) ===
+None found.
+
+=== GIT RECENT COMMITS (last 20) ===
+abe8ada Added dom-util.js to imrpove security and prevent XSS vulnerability
+4733f96 Update TODO.md: Phase 5 Complete - Calculator Backend Persistence
+d3d49ab Fix: Add requireAuth middleware to calculator routes
+e93fb1b Phase 5: Add calculator backend persistence with full CRUD
+42271fb Phase 4: Wire market insights and recommendations pages
+67a9962 Phase 3: Wire goals page - full CRUD with API integration
+37ae995 Phase 2: Wire core user account pages (profile, password, delete)
+d8cc43c Phase 1: Create centralized API client module and integrate into all frontend pages
+02dfc67 apply footer
+81ec178 refine
+81ea633 make asset performance slidable
+3e925b1 frontend+simple backend applied
+d2db5f1 seperate calculator function script code from html to js file (calculator)
+3272471 build card for calculator and calculation history (ui + function)
+2495eab Merge branch 'main' of https://github.com/JYuenChia/personal-financial-planning-system
+4fc2eb0 update button style
+af5b2ca Merge pull request #7 from JYuenChia/jy-frontend
+e6be0ad add date filter to goals
+392fb3b change theme color
+d06da1b Merge pull request #6 from JYuenChia/jy-frontend
+
+=== HIGH-CHURN FILES (last 90 days, top 20) ===
+  10 frontend/goals.html
+   8 frontend/market-insights.html
+   8 frontend/styles.css
+   7 frontend/index.html
+   6 frontend/recommendations.html
+   6 frontend/calculator.html
+   5 frontend/profile.html
+   5 frontend/register.html
+   4 backend/src/db.js
+   4 backend/src/routes/auth.routes.js
+   4 frontend/login.html
+   3 backend/src/routes/calculator.routes.js
+   3 frontend/delete-account.html
+   3 frontend/update-password.html
+   3 backend/src/middleware/auth.middleware.js
+   3 backend/src/utils/auth.util.js
+   3 backend/package.json
+   3 backend/src/server.js
+   3 backend/src/routes/user.routes.js
+   2 frontend/api-client.js
+
+=== MONOREPO SIGNALS ===
+No monorepo signals detected.
+
+=== CODE METRICS ===
+Total files scanned: 40
+Total lines of code: 3701
+
+Files by language:
+  JavaScript: 23
+  Other: 17
+
+Top 10 largest files:
+backend/package-lock.json: 33.2KB
+frontend/goals.html: 32.6KB
+package-lock.json: 28.2KB
+frontend/recommendations.html: 17.7KB
+frontend/market-insights.html: 13.9KB
+frontend/profile.html: 10.5KB
+frontend/index.html: 9.9KB
+frontend/calculator.html: 8.9KB
+frontend/update-password.html: 8.3KB
+frontend/register.html: 8.1KB
+
+=== CI/CD PIPELINES ===
+No CI/CD pipelines detected.
+
+=== CONTAINERS & ORCHESTRATION ===
+No containerization configs detected.
+
+=== SECURITY & COMPLIANCE ===
+No security configs detected.
+
+=== PERFORMANCE & TESTING ===
+No performance testing configs detected.
+
+=== SCAN COMPLETE ===
