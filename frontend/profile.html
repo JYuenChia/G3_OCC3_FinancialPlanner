@@ -1,0 +1,734 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile - Financial Planner</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* ── Modal Backdrop ── */
+      .modal-backdrop-custom {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(4px);
+        z-index: 1040;
+        opacity: 0;
+        transition: opacity 0.25s ease;
+      }
+      .modal-backdrop-custom.show {
+        opacity: 1;
+      }
+
+      /* ── Modal Box ── */
+      .modal-custom {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 1050;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+      }
+      .modal-custom.show {
+        display: flex;
+      }
+
+      .modal-custom-dialog {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+        width: 100%;
+        max-width: 480px;
+        transform: translateY(24px) scale(0.97);
+        opacity: 0;
+        transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.22s ease;
+      }
+      .modal-custom.show .modal-custom-dialog {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+      }
+
+      /* Danger variant */
+      .modal-custom-dialog.modal-danger .modal-custom-header {
+        background: linear-gradient(135deg, #d23928, #c84637);
+        border-bottom: 1px solid #ffd5d0;
+      }
+      .modal-custom-dialog.modal-danger .modal-custom-header h5 {
+        color: #c0392b;
+      }
+
+      .modal-custom-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.25rem 1.5rem 1rem;
+        background: linear-gradient(135deg, #355872, #355872);
+        border-bottom: 1px solid #d0d9f0;
+        border-radius: 16px 16px 0 0;
+      }
+      .modal-custom-header h5 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1a2b5e;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .modal-close-btn {
+        background: none;
+        border: none;
+        font-size: 1.25rem;
+        color: #6b7280;
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: 6px;
+        line-height: 1;
+        transition: background 0.15s, color 0.15s;
+      }
+      .modal-close-btn:hover {
+        background: rgba(0,0,0,0.07);
+        color: #111;
+      }
+
+      .modal-custom-body {
+        padding: 1.5rem;
+      }
+      .modal-custom-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.625rem;
+        padding: 0 1.5rem 1.5rem;
+      }
+
+      /* ── Form controls inside modals ── */
+      .modal-custom .form-label {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: #374151;
+        margin-bottom: 0.35rem;
+      }
+      .modal-custom .form-control {
+        border-radius: 8px;
+        border: 1.5px solid #d1d5db;
+        font-size: 0.9rem;
+        padding: 0.5rem 0.75rem;
+        transition: border-color 0.18s, box-shadow 0.18s;
+      }
+      .modal-custom .form-control:focus {
+        border-color: var(--palette-primary, #3b6ef8);
+        box-shadow: 0 0 0 3px rgba(59, 110, 248, 0.12);
+      }
+
+      /* ── Delete warning box ── */
+      .delete-warning-box {
+        background: #fff5f5;
+        border: 1.5px solid #fca5a5;
+        border-radius: 10px;
+        padding: 1rem 1.1rem;
+        margin-bottom: 1.1rem;
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-start;
+      }
+      .delete-warning-box i {
+        font-size: 1.3rem;
+        color: #dc2626;
+        flex-shrink: 0;
+        margin-top: 0.05rem;
+      }
+      .delete-warning-box p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: #7f1d1d;
+        line-height: 1.5;
+      }
+
+      /* ── Password strength bar ── */
+      .strength-bar {
+        height: 4px;
+        border-radius: 4px;
+        background: #e5e7eb;
+        margin-top: 0.5rem;
+        overflow: hidden;
+      }
+      .strength-fill {
+        height: 100%;
+        border-radius: 4px;
+        width: 0%;
+        transition: width 0.3s, background 0.3s;
+      }
+
+      /* ── Alert toast ── */
+      .toast-alert {
+        position: fixed;
+        bottom: 1.5rem;
+        right: 1.5rem;
+        z-index: 2000;
+        min-width: 280px;
+        border-radius: 10px;
+        padding: 0.9rem 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.88rem;
+        font-weight: 500;
+        box-shadow: 0 8px 24px rgba(0,0,0,0.14);
+        transform: translateY(80px);
+        opacity: 0;
+        transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), opacity 0.25s;
+      }
+      .toast-alert.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+      .toast-alert.success { background: #ecfdf5; color: #065f46; border: 1.5px solid #6ee7b7; }
+      .toast-alert.error   { background: #fef2f2; color: #991b1b; border: 1.5px solid #fca5a5; }
+
+      /* ── Save Preferences button — match Update Password style ── */
+      #save-preferences-btn {
+        /* Override the btn-outline-secondary styling */
+        color: #fff !important;
+        background: var(--palette-primary, #3b6ef8) !important;
+        border: none !important;
+        border-radius: 8px;
+        padding: 0.5rem 1.25rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: filter 0.18s, transform 0.15s;
+      }
+      #save-preferences-btn:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
+      }
+      #save-preferences-btn:active {
+        transform: translateY(0);
+      }
+    </style>
+  </head>
+  <body class="home-page">
+    <div class="hero-wrapper" style="min-height: auto; background: var(--palette-dark);">
+      <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+          <a class="navbar-brand fw-bold fs-3" href="index.html">FINANCE <span class="fw-light">PLANNER</span></a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="mainNavbar">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center" id="nav-list">
+              <li class="nav-item">
+                <a class="nav-link px-3" href="index.html">Home</a>
+              </li>
+              <!-- Auth links will be injected here via JS -->
+              <li class="nav-item auth-only" style="display: none;">
+                <a class="nav-link px-3" href="goals.html">Goals</a>
+              </li>
+              <li class="nav-item auth-only" style="display: none;">
+                <a class="nav-link px-3" href="recommendations.html">Recommendations</a>
+              </li>
+              <li class="nav-item auth-only" style="display: none;">
+                <a class="nav-link px-3" href="market-insights.html">Market Insights</a>
+              </li>
+              <li class="nav-item auth-only" style="display: none;">
+                <a class="nav-link px-3" href="calculator.html">Calculator</a>
+              </li>
+              <li class="nav-item guest-only" style="display: none;">
+                <a class="nav-link px-3" href="login.html">Login</a>
+              </li>
+              <li class="nav-item guest-only ms-2" style="display: none;">
+                <a class="btn btn-primary px-4 rounded-pill py-2 fw-bold" href="register.html" style="background-color: var(--palette-primary) !important; border-color: var(--palette-primary) !important;">Get Started</a>
+              </li>
+              <li class="nav-item auth-only ms-lg-2" style="display: none;">
+                <a class="nav-link px-2 active" href="profile.html" title="Profile">
+                  <i class="bi bi-person-circle fs-5" style="color: var(--palette-primary) !important;"></i>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </div>
+
+    <main class="container py-5">
+      <h1 class="mb-4">Profile Management</h1>
+
+      <!-- Account Overview -->
+      <div class="card p-4 mb-4">
+        <h2 class="h5 mb-3 text-dark">Account Overview</h2>
+        <div id="profile-info" class="row g-3">
+          <div class="col-12">
+            <div class="placeholder-glow">
+              <div class="placeholder col-4 mb-2"></div>
+              <div class="placeholder col-6 mb-2"></div>
+              <div class="placeholder col-3 mb-2"></div>
+              <div class="placeholder col-5"></div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-3">
+          <button class="btn btn-primary" id="edit-profile-btn">Edit Profile</button>
+        </div>
+      </div>
+
+      <!-- Account Security -->
+      <div class="card p-4 mb-4">
+        <h2 class="h5 mb-3 text-dark">Account Security</h2>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-shield-check text-success me-3 fs-4"></i>
+              <div>
+                <h6 class="mb-1 text-dark">Account Status</h6>
+                <p class="text-muted small mb-0">Your account is secure</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="d-flex align-items-center">
+              <i class="bi bi-clock text-info me-3 fs-4"></i>
+              <div>
+                <h6 class="mb-1 text-dark">Last Password Change</h6>
+                <p class="text-muted small mb-0" id="last-password-change">Never</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-3 d-flex gap-2">
+          <button class="btn btn-primary" id="update-password-btn">Update Password</button>
+          <button class="btn btn-outline-danger" id="delete-account-btn">Delete Account</button>
+        </div>
+      </div>
+
+      <!-- Account Preferences -->
+      <div class="card p-4 mb-4">
+        <h2 class="h5 mb-3 text-dark">Preferences</h2>
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Email Notifications</label>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="email-notifications" checked>
+              <label class="form-check-label" for="email-notifications">Important updates and reminders</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="goal-reminders" checked>
+              <label class="form-check-label" for="goal-reminders">Goal progress reminders</label>
+            </div>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="market-alerts">
+              <label class="form-check-label" for="market-alerts">Market insights and alerts</label>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Notification Frequency</label>
+            <select class="form-select" id="notification-frequency">
+              <option value="daily">Daily</option>
+              <option value="weekly" selected>Weekly</option>
+              <option value="monthly">Monthly</option>
+              <option value="never">Never</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Theme</label>
+            <select class="form-select" id="theme-select">
+              <option value="light" selected>Light</option>
+              <option value="dark">Dark</option>
+              <option value="auto">Auto (System)</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Currency Display</label>
+            <select class="form-select" id="currency-display">
+              <option value="USD" selected>USD ($)</option>
+              <option value="EUR">EUR (€)</option>
+              <option value="GBP">GBP (£)</option>
+              <option value="CAD">CAD (C$)</option>
+              <option value="AUD">AUD (A$)</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Date Format</label>
+            <select class="form-select" id="date-format">
+              <option value="MM/DD/YYYY" selected>MM/DD/YYYY</option>
+              <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+              <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Privacy Settings</label>
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="analytics-opt-in">
+              <label class="form-check-label" for="analytics-opt-in">Help improve the app with usage analytics</label>
+            </div>
+          </div>
+        </div>
+        <div class="mt-3">
+          <button class="btn btn-primary" id="save-preferences-btn">Save Preferences</button>
+        </div>
+      </div>
+
+      <!-- Account Actions -->
+      <div class="text-end">
+        <button id="logout-btn" class="btn btn-danger">Logout</button>
+      </div>
+    </main>
+
+    <footer class="py-5">
+      <div class="container">
+        <div class="row align-items-center">
+          <div class="col-md-4 mb-4 mb-md-0 text-center text-md-start">
+            <p class="mb-3">Join others who follow us for expert services — Follow us on social media!</p>
+            <div class="d-flex justify-content-center justify-content-md-start gap-3">
+              <a href="#" class="text-primary fs-3"><i class="bi bi-facebook"></i></a>
+              <a href="#" class="text-primary fs-3"><i class="bi bi-tiktok"></i></a>
+              <a href="#" class="text-primary fs-3"><i class="bi bi-youtube"></i></a>
+              <a href="#" class="text-primary fs-3"><i class="bi bi-instagram"></i></a>
+            </div>
+          </div>
+          <div class="col-md-4 mb-4 mb-md-0 text-center">
+            <div class="mb-2"><i class="bi bi-patch-check text-primary fs-1"></i></div>
+            <h6 class="fw-bold small mb-1">Ranked #1 Financial Planner</h6>
+            <p class="small text-muted">Personal Financial Planning System &copy; 2026.</p>
+          </div>
+          <div class="col-md-4">
+            <div class="row text-center text-md-start">
+              <div class="col-6">
+                <ul class="list-unstyled mb-0">
+                  <li class="mb-2"><a href="#" class="text-dark text-decoration-none small">Contact Us</a></li>
+                  <li class="mb-2"><a href="#" class="text-dark text-decoration-none small">About Us</a></li>
+                  <li><a href="#" class="text-dark text-decoration-none small">Our Services</a></li>
+                </ul>
+              </div>
+              <div class="col-6">
+                <ul class="list-unstyled mb-0">
+                  <li class="mb-2"><a href="#" class="text-dark text-decoration-none small">FAQs</a></li>
+                  <li class="mb-2"><a href="#" class="text-dark text-decoration-none small">Disclaimer</a></li>
+                  <li><a href="#" class="text-dark text-decoration-none small">Privacy Policy</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- ═══════════════════════════════════════════════
+         MODAL: Edit Profile
+    ════════════════════════════════════════════════ -->
+    <div class="modal-backdrop-custom" id="backdrop"></div>
+
+    <div class="modal-custom" id="modal-edit-profile" role="dialog" aria-modal="true" aria-labelledby="modal-edit-title">
+      <div class="modal-custom-dialog">
+        <div class="modal-custom-header">
+          <h5 id="modal-edit-title"><i class="bi bi-person-gear"></i> Edit Profile</h5>
+          <button class="modal-close-btn" data-close="modal-edit-profile" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-custom-body">
+          <form id="edit-profile-form" novalidate>
+            <div class="mb-3">
+              <label for="edit-full-name" class="form-label">Full Name</label>
+              <input type="text" class="form-control" id="edit-full-name" maxlength="100" placeholder="Your full name">
+            </div>
+            <div class="mb-0">
+              <label for="edit-email" class="form-label">Email Address</label>
+              <input type="email" class="form-control" id="edit-email" placeholder="you@example.com">
+            </div>
+          </form>
+        </div>
+        <div class="modal-custom-footer">
+          <button class="btn btn-secondary btn-sm" data-close="modal-edit-profile">Cancel</button>
+          <button class="btn btn-primary btn-sm" id="save-profile-btn">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         MODAL: Update Password
+    ════════════════════════════════════════════════ -->
+    <div class="modal-custom" id="modal-update-password" role="dialog" aria-modal="true" aria-labelledby="modal-pw-title">
+      <div class="modal-custom-dialog">
+        <div class="modal-custom-header">
+          <h5 id="modal-pw-title"><i class="bi bi-lock"></i> Update Password</h5>
+          <button class="modal-close-btn" data-close="modal-update-password" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-custom-body">
+          <div class="mb-3">
+            <label for="current-password" class="form-label">Current Password</label>
+            <div class="input-group">
+              <input type="password" class="form-control" id="current-password" placeholder="Enter current password">
+              <button class="btn btn-outline-secondary btn-sm toggle-pw" type="button" data-target="current-password">
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="new-password" class="form-label">New Password</label>
+            <div class="input-group">
+              <input type="password" class="form-control" id="new-password" placeholder="Minimum 8 characters">
+              <button class="btn btn-outline-secondary btn-sm toggle-pw" type="button" data-target="new-password">
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+            <div class="strength-bar mt-2"><div class="strength-fill" id="strength-fill"></div></div>
+            <small class="text-muted" id="strength-label"></small>
+          </div>
+          <div class="mb-0">
+            <label for="confirm-password" class="form-label">Confirm New Password</label>
+            <div class="input-group">
+              <input type="password" class="form-control" id="confirm-password" placeholder="Re-enter new password">
+              <button class="btn btn-outline-secondary btn-sm toggle-pw" type="button" data-target="confirm-password">
+                <i class="bi bi-eye"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-custom-footer">
+          <button class="btn btn-secondary btn-sm" data-close="modal-update-password">Cancel</button>
+          <button class="btn btn-primary btn-sm" id="save-password-btn">Update Password</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         MODAL: Delete Account
+    ════════════════════════════════════════════════ -->
+    <div class="modal-custom" id="modal-delete-account" role="dialog" aria-modal="true" aria-labelledby="modal-del-title">
+      <div class="modal-custom-dialog modal-danger">
+        <div class="modal-custom-header">
+          <h5 id="modal-del-title"><i class="bi bi-trash3"></i> Delete Account</h5>
+          <button class="modal-close-btn" data-close="modal-delete-account" aria-label="Close">&times;</button>
+        </div>
+        <div class="modal-custom-body">
+          <div class="delete-warning-box">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            <p><strong>This action cannot be undone.</strong> Deleting your account will permanently remove all your data, goals, and preferences. You will not be able to recover your account after this step.</p>
+          </div>
+          <div class="mb-0">
+            <label for="delete-confirm-input" class="form-label">Type <strong>DELETE</strong> to confirm</label>
+            <input type="text" class="form-control" id="delete-confirm-input" placeholder="DELETE" autocomplete="off">
+          </div>
+        </div>
+        <div class="modal-custom-footer">
+          <button class="btn btn-secondary btn-sm" data-close="modal-delete-account">Cancel</button>
+          <button class="btn btn-danger btn-sm" id="confirm-delete-btn" disabled>Delete My Account</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         Toast Notification
+    ════════════════════════════════════════════════ -->
+    <div class="toast-alert" id="toast-alert" role="alert" aria-live="polite"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="api-client.js"></script>
+    <script>
+      /* ─── State ─── */
+      let currentUser = {
+        id: "user123",
+        email: "john.doe@example.com",
+        full_name: "John Doe",
+        role: "user",
+        created_at: "2024-01-15T10:30:00.000Z",
+        updated_at: "2024-12-01T14:20:00.000Z"
+      };
+
+      /* ─── Auth / Navbar ─── */
+      function checkAuthState() {
+        document.querySelectorAll('.auth-only').forEach(el => el.style.display = 'block');
+        document.querySelectorAll('.guest-only').forEach(el => el.style.display = 'none');
+        setTimeout(() => displayProfile(currentUser), 400);
+      }
+
+      /* ─── Display Profile ─── */
+      function displayProfile(user) {
+        document.getElementById('profile-info').innerHTML = `
+          <div class="col-md-6">
+            <label class="form-label fw-bold text-dark">Full Name</label>
+            <p class="mb-2">${user.full_name || 'Not set'}</p>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-bold text-dark">Email Address</label>
+            <p class="mb-2">${user.email}</p>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-bold text-dark">Account Type</label>
+            <p class="mb-2">${user.role === 'admin' ? 'Administrator' : 'User'}</p>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-bold text-dark">Member Since</label>
+            <p class="mb-2">${new Date(user.created_at).toLocaleDateString()}</p>
+          </div>
+        `;
+      }
+
+      /* ─── Modal helpers ─── */
+      const backdrop = document.getElementById('backdrop');
+
+      function openModal(id) {
+        backdrop.style.display = 'block';
+        requestAnimationFrame(() => backdrop.classList.add('show'));
+        const modal = document.getElementById(id);
+        modal.style.display = 'flex';
+        requestAnimationFrame(() => modal.classList.add('show'));
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeModal(id) {
+        const modal = document.getElementById(id);
+        modal.classList.remove('show');
+        backdrop.classList.remove('show');
+        setTimeout(() => {
+          modal.style.display = 'none';
+          // Only hide backdrop if no other modal open
+          if (!document.querySelector('.modal-custom.show')) {
+            backdrop.style.display = 'none';
+            document.body.style.overflow = '';
+          }
+        }, 280);
+      }
+
+      // Wire close buttons
+      document.querySelectorAll('[data-close]').forEach(btn => {
+        btn.addEventListener('click', () => closeModal(btn.dataset.close));
+      });
+
+      // Close on backdrop click
+      backdrop.addEventListener('click', () => {
+        document.querySelectorAll('.modal-custom.show').forEach(m => closeModal(m.id));
+      });
+
+      // Close on Escape
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+          document.querySelectorAll('.modal-custom.show').forEach(m => closeModal(m.id));
+        }
+      });
+
+      /* ─── Toast ─── */
+      let toastTimer;
+      function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast-alert');
+        const icon = type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-circle-fill';
+        toast.className = `toast-alert ${type}`;
+        toast.innerHTML = `<i class="bi ${icon}"></i> ${message}`;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
+      }
+
+      /* ─── Edit Profile Modal ─── */
+      document.getElementById('edit-profile-btn').addEventListener('click', () => {
+        document.getElementById('edit-full-name').value = currentUser.full_name || '';
+        document.getElementById('edit-email').value = currentUser.email || '';
+        openModal('modal-edit-profile');
+      });
+
+      document.getElementById('save-profile-btn').addEventListener('click', () => {
+        const name = document.getElementById('edit-full-name').value.trim();
+        const email = document.getElementById('edit-email').value.trim();
+        if (!email) { showToast('Please enter a valid email.', 'error'); return; }
+        currentUser = { ...currentUser, full_name: name || null, email, updated_at: new Date().toISOString() };
+        displayProfile(currentUser);
+        closeModal('modal-edit-profile');
+        showToast('Profile updated successfully.');
+      });
+
+      /* ─── Update Password Modal ─── */
+      document.getElementById('update-password-btn').addEventListener('click', () => {
+        document.getElementById('current-password').value = '';
+        document.getElementById('new-password').value = '';
+        document.getElementById('confirm-password').value = '';
+        document.getElementById('strength-fill').style.width = '0%';
+        document.getElementById('strength-label').textContent = '';
+        openModal('modal-update-password');
+      });
+
+      // Password strength meter
+      document.getElementById('new-password').addEventListener('input', function () {
+        const val = this.value;
+        let score = 0;
+        if (val.length >= 8) score++;
+        if (/[A-Z]/.test(val)) score++;
+        if (/[0-9]/.test(val)) score++;
+        if (/[^A-Za-z0-9]/.test(val)) score++;
+        const fill = document.getElementById('strength-fill');
+        const label = document.getElementById('strength-label');
+        const levels = [
+          { w: '0%',   bg: '#e5e7eb', text: '' },
+          { w: '25%',  bg: '#ef4444', text: 'Weak' },
+          { w: '50%',  bg: '#f97316', text: 'Fair' },
+          { w: '75%',  bg: '#eab308', text: 'Good' },
+          { w: '100%', bg: '#22c55e', text: 'Strong' },
+        ];
+        fill.style.width = levels[score].w;
+        fill.style.background = levels[score].bg;
+        label.textContent = levels[score].text;
+      });
+
+      // Toggle password visibility
+      document.querySelectorAll('.toggle-pw').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const input = document.getElementById(btn.dataset.target);
+          const icon = btn.querySelector('i');
+          if (input.type === 'password') {
+            input.type = 'text';
+            icon.className = 'bi bi-eye-slash';
+          } else {
+            input.type = 'password';
+            icon.className = 'bi bi-eye';
+          }
+        });
+      });
+
+      document.getElementById('save-password-btn').addEventListener('click', () => {
+        const curr = document.getElementById('current-password').value;
+        const nw = document.getElementById('new-password').value;
+        const conf = document.getElementById('confirm-password').value;
+        if (!curr) { showToast('Please enter your current password.', 'error'); return; }
+        if (nw.length < 8) { showToast('New password must be at least 8 characters.', 'error'); return; }
+        if (nw !== conf) { showToast('Passwords do not match.', 'error'); return; }
+        document.getElementById('last-password-change').textContent = new Date().toLocaleDateString();
+        closeModal('modal-update-password');
+        showToast('Password updated successfully.');
+      });
+
+      /* ─── Delete Account Modal ─── */
+      document.getElementById('delete-account-btn').addEventListener('click', () => {
+        document.getElementById('delete-confirm-input').value = '';
+        document.getElementById('confirm-delete-btn').disabled = true;
+        openModal('modal-delete-account');
+      });
+
+      document.getElementById('delete-confirm-input').addEventListener('input', function () {
+        document.getElementById('confirm-delete-btn').disabled = this.value !== 'DELETE';
+      });
+
+      document.getElementById('confirm-delete-btn').addEventListener('click', () => {
+        closeModal('modal-delete-account');
+        showToast('Account deleted. Redirecting…', 'error');
+        setTimeout(() => {
+          localStorage.removeItem('token');
+          window.location.href = 'index.html';
+        }, 2000);
+      });
+
+      /* ─── Save Preferences ─── */
+      document.getElementById('save-preferences-btn').addEventListener('click', () => {
+        showToast('Preferences saved successfully.');
+      });
+
+      /* ─── Logout ─── */
+      document.getElementById('logout-btn').addEventListener('click', () => {
+        localStorage.removeItem('token');
+        window.location.href = 'index.html';
+      });
+
+      /* ─── Init ─── */
+      document.addEventListener('DOMContentLoaded', checkAuthState);
+    </script>
+  </body>
+</html>
