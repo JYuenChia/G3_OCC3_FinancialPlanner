@@ -53,6 +53,7 @@ const calculationSchema = new mongoose.Schema(
 );
 
 const calculationCreateSchema = z.object({
+  _id: z.string().trim().min(1).optional(),
   user_id: z.string().trim().min(1).optional(),
   title: z.string().trim().min(1).max(200),
   initial: z.coerce.number().finite().positive(),
