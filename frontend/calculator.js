@@ -29,14 +29,24 @@ function renderHistory() {
   if (!allCalculations.length) {
     historyBody.innerHTML = `
       <tr>
-        <td colspan="6" class="text-muted text-center">No saved calculations yet.</td>
+        <td colspan="7" class="text-muted text-center">No saved calculations yet.</td>
       </tr>
     `;
     return;
   }
 
   historyBody.innerHTML = allCalculations
-    .map(item => `
+    .map(item => {
+      const roiPercent =
+        Number.isFinite(Number(item.roiPercent))
+          ? Number(item.roiPercent)
+          : Number.isFinite(Number(item.roi_percent))
+            ? Number(item.roi_percent)
+            : (Number(item.initial) > 0
+                ? (Number(item.profit) / Number(item.initial)) * 100
+                : 0);
+
+      return `
       <tr>
         <td>${item.title}</td>
         <td>${Number(item.initial).toFixed(2)}</td>
@@ -44,10 +54,43 @@ function renderHistory() {
         <td>${Number(item.years).toFixed(2)}</td>
         <td>${Number(item.final_amount).toFixed(2)}</td>
         <td>${Number(item.profit).toFixed(2)}</td>
+        <td>${roiPercent.toFixed(2)}</td>
+        <td>
+          <button class="btn btn-sm btn-outline-danger delete-calc" data-id="${item._id}" title="Delete">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </td>
       </tr>
-    `)
+    `;
+    })
     .join("");
 }
+
+// Handle delete button clicks (event delegation)
+historyBody.addEventListener('click', async (e) => {
+  const btn = e.target.closest('.delete-calc');
+  if (!btn) return;
+
+  const id = btn.dataset.id;
+  if (!id) return;
+
+  if (!confirm('Delete this calculation? This cannot be undone.')) return;
+
+  try {
+    showLoading(true);
+    const resp = await apiClient.deleteCalculation(id);
+    if (resp.success) {
+      showSuccess('Calculation deleted');
+      await loadCalculations();
+    } else {
+      showError('Failed to delete calculation');
+    }
+  } catch (err) {
+    showError('Error deleting calculation');
+  } finally {
+    showLoading(false);
+  }
+});
 
 // Handle ROI form submission
 roiForm.addEventListener("submit", function(e) {
@@ -66,6 +109,7 @@ roiForm.addEventListener("submit", function(e) {
   // Calculation
   let finalAmount = initial * Math.pow((1 + rate), years);
   let roi = finalAmount - initial;
+  let roiPercent = (roi / initial) * 100;
 
   let resultDiv = document.getElementById("result");
   resultDiv.classList.remove("d-none");
@@ -73,6 +117,7 @@ roiForm.addEventListener("submit", function(e) {
   resultDiv.innerHTML = `
     <strong>Final Amount:</strong> RM ${finalAmount.toFixed(2)} <br>
     <strong>Profit (ROI):</strong> RM ${roi.toFixed(2)}
+    <strong>ROI Percentage:</strong> ${roiPercent.toFixed(2)}%
   `;
 
   latestCalculation = {
@@ -80,7 +125,8 @@ roiForm.addEventListener("submit", function(e) {
     ratePercent: rate * 100,
     years,
     finalAmount,
-    roi
+    roi,
+    roiPercent
   };
 
   saveBtn.disabled = false;
@@ -92,7 +138,7 @@ saveBtn.addEventListener("click", function() {
     alert("Please calculate first before saving.");
     return;
   }
-
+  
   calcTitleInput.value = "";
   saveModal.show();
 });
@@ -116,10 +162,17 @@ saveForm.addEventListener("submit", async function(e) {
       await loadCalculations();
       saveModal.hide();
     } else {
-      showError("Failed to save calculation");
+      showError("Failed to save calculation.");
     }
   } catch (error) {
-    showError("Error saving calculation");
+    const errorMessage = error?.message || "Error saving calculation.";
+    if (errorMessage.includes("401") || errorMessage.toLowerCase().includes("authorization")) {
+      showError("Your session has expired. Please log in again.");
+      window.location.href = "login.html";
+      return;
+    }
+
+    showError(errorMessage);
   } finally {
     showLoading(false);
   }

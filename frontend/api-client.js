@@ -22,7 +22,8 @@ class ApiClient {
    * Get auth headers
    */
   getAuthHeader() {
-    return this.token ? { Authorization: `Bearer ${this.token}` } : {};
+    const token = localStorage.getItem('token') || this.token;
+    return token ? { Authorization: `Bearer ${token}` } : {};
   }
 
   /**

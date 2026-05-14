@@ -71,17 +71,17 @@
 
             <div class="col-md-4 mb-3">
               <label class="form-label">Initial Investment (RM)</label>
-              <input type="number" id="initial" class="form-control" required>
+              <input type="number" id="initial" class="form-control" step="any" required>
             </div>
 
             <div class="col-md-4 mb-3">
               <label class="form-label">Annual Interest Rate (%)</label>
-              <input type="number" id="rate" class="form-control" required>
+              <input type="number" id="rate" class="form-control" step="any" required>
             </div>
 
             <div class="col-md-4 mb-3">
               <label class="form-label">Years</label>
-              <input type="number" id="years" class="form-control" required>
+              <input type="number" id="years" class="form-control" step="any" required>
             </div>
 
           </div>
@@ -118,11 +118,13 @@
                 <th>Years</th>
                 <th>Final Amount (RM)</th>
                 <th>Profit (RM)</th>
+                <th>ROI (%)</th>
+                <th></th>
               </tr>
             </thead>
             <tbody id="historyBody">
               <tr>
-                <td colspan="6" class="text-muted text-center">No saved calculations yet.</td>
+                <td colspan="7" class="text-muted text-center">No saved calculations yet.</td>
               </tr>
             </tbody>
           </table>
@@ -174,10 +176,12 @@
     </footer>
 
     <div class="modal fade" id="saveModal" tabindex="-1" aria-labelledby="saveModalLabel" aria-hidden="true">
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="saveModalLabel">Save Calculation</h5>
+            <h5 class="modal-title" id="saveModalLabel" style="color: #1f3f56;">
+              Save Calculation
+            </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <form id="saveForm">

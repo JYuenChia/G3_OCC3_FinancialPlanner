@@ -326,6 +326,21 @@ footer a:hover {
   border-radius: 0.5rem;
 }
 
+.modal-dialog-centered {
+  display: flex;
+  align-items: center;
+  min-height: calc(100% - 1rem);
+}
+
+.modal-title {
+  color: #1f3f56 !important;
+}
+
+.modal-content {
+  border-radius: 1rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
 /* Custom Styles for the Slidable Highlights */
 .carousel-control-prev,
 .carousel-control-next {
