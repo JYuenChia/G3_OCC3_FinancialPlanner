@@ -1,26 +1,16 @@
 /*
 Market Insights Page - Live Data Integration
-Fetches real market data from backend (Yahoo Finance + CoinGecko + NewsAPI)
+Fetches fully dynamic, single-source real market data from the backend (Yahoo Finance API)
 */
 
 let marketChart;
-let currentAsset = 'sp500';
-
-// Data mapping for friendly names to API symbols
-const assetSymbols = {
-  sp500: { label: 'S&P 500', symbol: 'sp500', type: 'stock', color: '#1a53bd' },
-  btc: { label: 'Bitcoin (BTC)', symbol: 'btc', type: 'crypto', color: '#f7931a' },
-  eth: { label: 'Ethereum (ETH)', symbol: 'eth', type: 'crypto', color: '#627eea' },
-  gold: { label: 'Gold (XAU)', symbol: 'gold', type: 'stock', color: '#ffca2c' },
-  aapl: { label: 'Apple (AAPL)', symbol: 'aapl', type: 'stock', color: '#555555' },
-  nasdaq: { label: 'NASDAQ', symbol: 'nasdaq', type: 'stock', color: '#4285F4' },
-};
+let currentAsset = '^GSPC'; // Defaulting to standard Yahoo Finance S&P 500 Ticker
+let currentAssetLabel = 'S&P 500 Index';
 
 // --- INITIALIZATION ---
 document.addEventListener('DOMContentLoaded', () => {
   checkAuthState();
-  initChart();
-  loadCarouselData();
+  loadCarouselAndDropdownData(); // Combined initialization into one live API data stream array
   loadNews();
   setupEventListeners();
   updateLastUpdated();
@@ -36,89 +26,167 @@ function checkAuthState() {
   document.querySelectorAll('.guest-only').forEach(el => el.style.display = 'none');
 }
 
-//Load carousel data (featured assets) - now from trending endpoint
-async function loadCarouselData() {
+// Fetches live data and dynamically populates BOTH the carousel and the dropdown selection menu!
+async function loadCarouselAndDropdownData() {
   try {
     showLoadingState('carousel');
     
-    // Fetch all trending tickers from single endpoint
+    // Fetch live market summary from your backend Yahoo Finance bridge
     const response = await apiClient.getMarketTrendingTickers()
       .catch(err => ({ success: false, data: [], error: err.message }));
     
     if (!response.success || !response.data || response.data.length === 0) {
-      throw new Error('Failed to fetch trending data');
+      throw new Error('Failed to fetch dynamic summary data from API');
     }
 
     const tickers = response.data;
     
-    // Map trending tickers to carousel positions
-    // Item 1: sp500 (index 0), btc (index 1), gold (index 2)
-    // Item 2: eth (index 3), nasdaq (index 4), aapl (index 5)
-    const tickerMap = tickers.reduce((map, ticker) => {
-      map[ticker.symbol] = ticker;
-      return map;
-    }, {});
+    // Set our default starting asset to the first real asset returned by the API
+    if (tickers[0]) {
+      currentAsset = tickers[0].symbol || '^GSPC';
+      currentAssetLabel = tickers[0].label || 'Asset';
+    }
+    
+    // initialize the chart with dynamic initial choice
+    initChart();
 
-    // Helper to format price with change
-    const formatPriceWithChange = (ticker) => {
-      if (!ticker || !ticker.price) return 'N/A';
-      const price = ticker.price.toFixed(2);
-      const change = ticker.changePercent ? ticker.changePercent.toFixed(2) : '0.00';
-      const sign = ticker.changePercent >= 0 ? '+' : '';
-      return `$${price} (${sign}${change}%)`;
-    };
+    // DYNAMICALLY POPULATE DROPDOWN
+    const assetSelector = document.getElementById('assetSelector');
+    if (assetSelector) {
+      assetSelector.innerHTML = '';
+      
+      tickers.forEach(ticker => {
+        const symbol = ticker.symbol;
+        const label = ticker.label || symbol;
+        if (!symbol) return;
 
-    // Update carousel item 1
-    updateCarouselCard(0, 0, 'S&P 500 Index', formatPriceWithChange(tickerMap['sp500']));
-    updateCarouselCard(0, 1, 'Bitcoin (BTC)', formatPriceWithChange(tickerMap['btc']));
-    updateCarouselCard(0, 2, 'Gold (XAU)', formatPriceWithChange(tickerMap['gold']));
+        const option = document.createElement('option');
+        option.value = symbol;
+        option.textContent = label;
+        assetSelector.appendChild(option);
+      });
+    }
 
-    // Update carousel item 2
-    updateCarouselCard(1, 0, 'Ethereum (ETH)', formatPriceWithChange(tickerMap['eth']));
-    updateCarouselCard(1, 1, 'NASDAQ', formatPriceWithChange(tickerMap['nasdaq']));
-    updateCarouselCard(1, 2, 'Apple (AAPL)', formatPriceWithChange(tickerMap['aapl']));
+    // DYNAMICALLY POPULATE CAROUSEL
+    const carouselInner = document.querySelector('.carousel-inner');
+    if (!carouselInner) return;
+
+    carouselInner.innerHTML = '';
+
+    const chunkSize = 3;
+    let slideIndex = 0;
+
+    for (let i = 0; i < tickers.length; i += chunkSize) {
+      const chunk = tickers.slice(i, i + chunkSize);
+      
+      const slideItem = document.createElement('div');
+      slideItem.className = `carousel-item ${slideIndex === 0 ? 'active' : ''}`;
+      
+      const row = document.createElement('div');
+      row.className = 'row g-3';
+
+      chunk.forEach(ticker => {
+        const symbol = ticker.symbol;
+        const label = ticker.label || symbol;
+        if (!symbol) return;
+
+        const col = document.createElement('div');
+        col.className = 'col-md-4';
+
+        // Extract numbers from the backend values cleanly
+        const changePercentValue = typeof ticker.changePercent === 'number' ? ticker.changePercent : 0;
+        const priceValue = typeof ticker.price === 'number' ? ticker.price : 0;
+
+        // =========================================================================
+        // 📊 THREE-WAY COLOR AND SIGN ENGINE
+        // Accounts for Positive (+ Green), Negative (- Red), and Flat (0.00 Gray)
+        // =========================================================================
+        let changeSign = '';
+        let colorClass = 'text-muted'; // Neutral gray fallback for flat markets
+
+        if (changePercentValue > 0) {
+          changeSign = '+';
+          colorClass = 'text-success'; // Market Green
+        } else if (changePercentValue < 0) {
+          changeSign = ''; // The negative minus sign is automatically bundled in the number string
+          colorClass = 'text-danger'; // Market Red
+        }
+
+        const formattedPrice = priceValue.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        const formattedChange = changePercentValue.toFixed(2);
+
+        col.innerHTML = `
+          <div class="card feature-card shadow-sm p-3 border-0 bg-white h-100" style="cursor: pointer;" onclick="changeChartAsset('${symbol}', '${label.replace(/'/g, "\\'")}')">
+            <h6 class="text-muted text-uppercase mb-2 fw-bold small">${label}</h6>
+            <div class="h3 m-0 fw-bold ${colorClass}">$${formattedPrice}</div>
+            <div class="small fw-semibold ${colorClass} mt-1">${changeSign}${formattedChange}% Today</div>
+          </div>
+        `;
+        row.appendChild(col);
+      });
+
+      slideItem.appendChild(row);
+      carouselInner.appendChild(slideItem);
+      slideIndex++;
+    }
 
     hideLoadingState('carousel');
   } catch (error) {
-    console.error('Error loading carousel data:', error);
+    console.error('Error loading dynamic carousel and dropdown data:', error);
     showError('Failed to load market data');
     hideLoadingState('carousel');
   }
 }
 
-//Update a carousel card with live data
-function updateCarouselCard(itemIndex, cardIndex, title, value) {
-  const carouselItems = document.querySelectorAll('.carousel-item');
-  if (carouselItems[itemIndex]) {
-    const card = carouselItems[itemIndex].querySelectorAll('.col-md-4')[cardIndex];
-    if (card) {
-      const titleEl = card.querySelector('h6');
-      const valueEl = card.querySelector('.h3');
-      if (titleEl) titleEl.textContent = title;
-      if (valueEl) valueEl.textContent = value;
-    }
+async function changeChartAsset(symbol, label) {
+  currentAsset = symbol;
+  currentAssetLabel = label;
+  
+  const assetSelector = document.getElementById('assetSelector');
+  if (assetSelector) {
+    assetSelector.value = symbol;
   }
+  
+  await initChart();
 }
 
-//Initialize chart with live data
+// Initialize chart drawing lines directly from the dynamic endpoints
 async function initChart() {
   try {
     showLoadingState('chart');
     
-    const trendData = await apiClient.getMarketTrends(currentAsset, 7);
-    const asset = assetSymbols[currentAsset];
+    const trendData = await apiClient.getMarketTrends(currentAsset, 8);
 
     if (!trendData?.data?.data || trendData.data.data.length === 0) {
-      throw new Error('No trend data available');
+      throw new Error(`No real-time chart data arrays returned for: ${currentAsset}`);
     }
 
     const ctx = document.getElementById('marketChart').getContext('2d');
     const prices = trendData.data.data.map(p => p.close);
     const labels = trendData.data.data.map(p => p.date);
 
-    // Destroy existing chart instance if it exists
     if (marketChart) {
       marketChart.destroy();
+    }
+    
+    // Dynamic Custom Colors Configuration Maps
+    let chartColor = '#1a53bd'; 
+    const checkTicker = currentAsset.toLowerCase();
+
+    if (checkTicker.includes('gspc')) {
+      chartColor = '#00b4d8'; // S&P 500 Modern Teal Blue
+    } else if (checkTicker.includes('btc')) {
+      chartColor = '#f7931a'; // Bitcoin Iconic Amber Orange
+    } else if (checkTicker.includes('eth')) {
+      chartColor = '#a484e9'; // Ethereum Deep Crystal Purple
+    } else if (checkTicker.includes('aapl')) {
+      chartColor = '#4a4a4a'; // Apple Tech Sleek Charcoal
+    } else if (checkTicker.includes('gc=f') || checkTicker.includes('gold')) {
+      chartColor = '#e5a93b'; // Gold Premium Metallic Yellow
+    } else if (checkTicker.includes('ixic') || checkTicker.includes('nasdaq')) {
+      chartColor = '#4682b4'; // NASDAQ Dynamic Steel Blue
+    } else {
+      chartColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
     }
 
     marketChart = new Chart(ctx, {
@@ -126,13 +194,13 @@ async function initChart() {
       data: {
         labels,
         datasets: [{
-          label: asset.label,
+          label: currentAssetLabel,
           data: prices,
-          borderColor: asset.color,
-          backgroundColor: asset.color + '22',
+          borderColor: chartColor,
+          backgroundColor: chartColor + '22',
           fill: true,
           tension: 0.4,
-          pointBackgroundColor: asset.color,
+          pointBackgroundColor: chartColor,
           pointBorderColor: '#fff',
           pointBorderWidth: 2,
           pointRadius: 4,
@@ -173,20 +241,24 @@ async function initChart() {
   }
 }
 
-//Setup event listeners
+// Setup event listeners seamlessly to forward drop down changes
 function setupEventListeners() {
   const assetSelector = document.getElementById('assetSelector');
   if (assetSelector) {
-    // Use a named function for easy removal
     window.handleAssetChange = async (e) => {
       currentAsset = e.target.value;
+      currentAssetLabel = assetSelector.options[assetSelector.selectedIndex].text;
       await initChart();
     };
     assetSelector.addEventListener('change', window.handleAssetChange);
   }
 }
 
-//Load financial news
+/*
+=========================================================================
+🔒 FIXED FEATURE: FINANCIAL NEWS LOGIC (REMOVED [OBJECT OBJECT])
+=========================================================================
+*/
 async function loadNews() {
   try {
     showLoadingState('news');
@@ -200,7 +272,6 @@ async function loadNews() {
       return;
     }
 
-    // Filter the news that have a valid image URL
     const articlesWithImages = newsData.data.articles.filter(article => {
       return article.urlToImage && 
              article.urlToImage.trim() !== "" && 
@@ -217,6 +288,11 @@ async function loadNews() {
       const imageUrl = article.urlToImage;
       const date = article.publishedAt ? new Date(article.publishedAt).toLocaleDateString() : new Date().toLocaleDateString();
       
+      // Safe string resolution engine for the source metadata
+      const sourceName = (article.source && typeof article.source === 'object' && article.source.name) 
+                          ? article.source.name 
+                          : (typeof article.source === 'string' ? article.source : 'NEWS');
+      
       return `
       <div class="list-group-item border-0 border-bottom py-3 bg-transparent px-3">
         <div class="row g-3 align-items-start">
@@ -224,13 +300,13 @@ async function loadNews() {
             <div class="ratio ratio-4x3 shadow-sm rounded-2 overflow-hidden">
               <img src="${imageUrl}"
                 class="object-fit-cover" 
-                onerror="thisonerror=null; this.src='https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=500&q=80';"
+                onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=500&q=80';"
                 alt="news thumb">
             </div>
           </div>
           <div class="col-8">
             <div class="fw-bolder text-uppercase mb-1" style="font-size: 0.65rem; color: #1a53bd;">
-              ${article.source || 'NEWS'}
+              ${sourceName}
             </div>
             <a href="javascript:void(0)" onclick="showFullNews(${index})" class="text-decoration-none">
               <h6 class="fw-bold text-dark mb-1 news-link" style="line-height: 1.3; font-size: 0.9rem;">
@@ -243,7 +319,6 @@ async function loadNews() {
       </div>`;
     }).join('');
 
-    // Store current news for detail view
     window.currentNews = articlesWithImages;
     hideLoadingState('news');
   } catch (error) {
@@ -254,7 +329,6 @@ async function loadNews() {
   }
 }
 
-//Show full news article
 function showFullNews(index) {
   const articles = window.currentNews || [];
   const selected = articles[index];
@@ -265,23 +339,27 @@ function showFullNews(index) {
   const contentArea = document.getElementById('bottom-content-area');
   const sidebarImg = document.getElementById('news-sidebar-img');
 
-  // Set sidebar image
   if (selected.urlToImage) {
     sidebarImg.style.backgroundImage = `url('${selected.urlToImage}')`;
   } else {
     sidebarImg.style.backgroundColor = '#f0f0f0';
   }
 
+  // Safe string resolution engine for selection viewport
+  const sourceName = (selected.source && typeof selected.source === 'object' && selected.source.name) 
+                      ? selected.source.name 
+                      : (typeof selected.source === 'string' ? selected.source : 'FINANCIAL NEWS');
+
   const date = new Date(selected.publishedAt).toLocaleDateString();
   contentArea.innerHTML = `
     <div class="text-uppercase mb-2 fw-bold" style="font-size: 0.75rem; color: #1a53bd; letter-spacing: 1px;">
-      ${selected.source || 'FINANCIAL NEWS'}
+      ${sourceName}
     </div>
     <h1 class="fw-bold mb-3" style="color: #d42c20 !important; font-size: 2.5rem; line-height: 1.1;">
       ${selected.title}
     </h1>
     <div class="mb-4 fw-bold" style="color: #007bff;">
-      ${selected.source || 'Source'} | ${date}
+      ${sourceName} | ${date}
     </div>
     
     <div class="news-text text-dark" style="line-height: 1.8; font-size: 1.1rem;">
@@ -295,7 +373,7 @@ function showFullNews(index) {
   displaySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-//Refresh all data
+// Refresh all sections concurrently
 async function refreshAllData() {
   const refreshBtn = document.getElementById('refresh-btn');
   if (refreshBtn) {
@@ -304,8 +382,7 @@ async function refreshAllData() {
   }
 
   await Promise.all([
-    loadCarouselData(),
-    initChart(),
+    loadCarouselAndDropdownData(),
     loadNews(),
   ]);
 
@@ -317,7 +394,6 @@ async function refreshAllData() {
   updateLastUpdated();
 }
 
-//Update last updated timestamp
 function updateLastUpdated() {
   const lastUpdatedEl = document.getElementById('last-updated');
   if (lastUpdatedEl) {
@@ -326,7 +402,6 @@ function updateLastUpdated() {
   }
 }
 
-//Loading state helpers
 function showLoadingState(section) {
   if (section === 'carousel') {
     const carousel = document.getElementById('assetCarousel');
@@ -361,5 +436,4 @@ function hideLoadingState(section) {
 
 function showError(message) {
   console.error(message);
-  // Could add toast notification here
 }
