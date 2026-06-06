@@ -1,7 +1,7 @@
-/**
- * Market Insights Page - Live Data Integration
- * Fetches real market data from backend (Yahoo Finance + CoinGecko + NewsAPI)
- */
+/*
+Market Insights Page - Live Data Integration
+Fetches real market data from backend (Yahoo Finance + CoinGecko + NewsAPI)
+*/
 
 let marketChart;
 let currentAsset = 'sp500';
@@ -36,9 +36,7 @@ function checkAuthState() {
   document.querySelectorAll('.guest-only').forEach(el => el.style.display = 'none');
 }
 
-/**
- * Load carousel data (featured assets) - now from trending endpoint
- */
+//Load carousel data (featured assets) - now from trending endpoint
 async function loadCarouselData() {
   try {
     showLoadingState('carousel');
@@ -88,9 +86,7 @@ async function loadCarouselData() {
   }
 }
 
-/**
- * Update a carousel card with live data
- */
+//Update a carousel card with live data
 function updateCarouselCard(itemIndex, cardIndex, title, value) {
   const carouselItems = document.querySelectorAll('.carousel-item');
   if (carouselItems[itemIndex]) {
@@ -104,9 +100,7 @@ function updateCarouselCard(itemIndex, cardIndex, title, value) {
   }
 }
 
-/**
- * Initialize chart with live data
- */
+//Initialize chart with live data
 async function initChart() {
   try {
     showLoadingState('chart');
@@ -179,9 +173,7 @@ async function initChart() {
   }
 }
 
-/**
- * Setup event listeners
- */
+//Setup event listeners
 function setupEventListeners() {
   const assetSelector = document.getElementById('assetSelector');
   if (assetSelector) {
@@ -194,9 +186,7 @@ function setupEventListeners() {
   }
 }
 
-/**
- * Load financial news
- */
+//Load financial news
 async function loadNews() {
   try {
     showLoadingState('news');
@@ -210,16 +200,32 @@ async function loadNews() {
       return;
     }
 
-    newsContainer.innerHTML = newsData.data.articles.slice(0, 5).map((article, index) => {
-      const imageUrl = article.urlToImage || 'images/news-placeholder.jpg';
-      const date = new Date(article.publishedAt).toLocaleDateString();
+    // Filter the news that have a valid image URL
+    const articlesWithImages = newsData.data.articles.filter(article => {
+      return article.urlToImage && 
+             article.urlToImage.trim() !== "" && 
+             article.urlToImage.startsWith('http');
+    });
+
+    if (articlesWithImages.length === 0) {
+      newsContainer.innerHTML = '<div class="list-group-item py-3 text-muted text-center">No articles with images available</div>';
+      hideLoadingState('news');
+      return;
+    }
+
+    newsContainer.innerHTML = articlesWithImages.slice(0, 10).map((article, index) => {
+      const imageUrl = article.urlToImage;
+      const date = article.publishedAt ? new Date(article.publishedAt).toLocaleDateString() : new Date().toLocaleDateString();
       
       return `
       <div class="list-group-item border-0 border-bottom py-3 bg-transparent px-3">
         <div class="row g-3 align-items-start">
           <div class="col-4">
             <div class="ratio ratio-4x3 shadow-sm rounded-2 overflow-hidden">
-              <img src="${imageUrl}" class="object-fit-cover" onerror="this.src='images/news-placeholder.jpg'" alt="news thumb">
+              <img src="${imageUrl}"
+                class="object-fit-cover" 
+                onerror="thisonerror=null; this.src='https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=500&q=80';"
+                alt="news thumb">
             </div>
           </div>
           <div class="col-8">
@@ -238,7 +244,7 @@ async function loadNews() {
     }).join('');
 
     // Store current news for detail view
-    window.currentNews = newsData.data.articles;
+    window.currentNews = articlesWithImages;
     hideLoadingState('news');
   } catch (error) {
     console.error('Error loading news:', error);
@@ -248,9 +254,7 @@ async function loadNews() {
   }
 }
 
-/**
- * Show full news article
- */
+//Show full news article
 function showFullNews(index) {
   const articles = window.currentNews || [];
   const selected = articles[index];
@@ -291,9 +295,7 @@ function showFullNews(index) {
   displaySection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-/**
- * Refresh all data
- */
+//Refresh all data
 async function refreshAllData() {
   const refreshBtn = document.getElementById('refresh-btn');
   if (refreshBtn) {
@@ -315,9 +317,7 @@ async function refreshAllData() {
   updateLastUpdated();
 }
 
-/**
- * Update last updated timestamp
- */
+//Update last updated timestamp
 function updateLastUpdated() {
   const lastUpdatedEl = document.getElementById('last-updated');
   if (lastUpdatedEl) {
@@ -326,9 +326,7 @@ function updateLastUpdated() {
   }
 }
 
-/**
- * Loading state helpers
- */
+//Loading state helpers
 function showLoadingState(section) {
   if (section === 'carousel') {
     const carousel = document.getElementById('assetCarousel');
