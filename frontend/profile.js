@@ -238,3 +238,37 @@ document.getElementById('save-password-btn').addEventListener('click', async () 
         showLoading(false);
     }
 });
+
+// Delete Account Logic
+document.getElementById('delete-account-btn').addEventListener('click', () => {
+    // Reset the confirmation input and button state when opening
+    document.getElementById('delete-confirm-input').value = '';
+    document.getElementById('confirm-delete-btn').disabled = true;
+    openModal('modal-delete-account');
+});
+
+// Enable/Disable delete button based on typing "DELETE"
+document.getElementById('delete-confirm-input').addEventListener('input', function () {
+    const confirmBtn = document.getElementById('confirm-delete-btn');
+    confirmBtn.disabled = this.value !== 'DELETE';
+});
+
+// Perform the deletion
+document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+    try {
+        showLoading(true);
+        // Calls the DELETE /user/account endpoint defined in your api-client
+        await apiClient.deleteAccount();
+        
+        // Clear local storage and redirect
+        localStorage.removeItem('token');
+        localStorage.removeItem('refresh_token');
+        localStorage.removeItem('user_id');
+        
+        window.location.href = 'index.html'; 
+    } catch (error) {
+        alert('Delete failed: ' + error.message);
+    } finally {
+        showLoading(false);
+    }
+});
