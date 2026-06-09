@@ -74,7 +74,7 @@ async function getAccessibleGoal(req, res, goalId) {
 router.use(requireAuth);
 
 
-// GET /api/goals -> fetch all goals belonging to logged-in user
+// GET /api/goals, fetch all goals belonging to logged-in user
 router.get("/", async (req, res) => {
   try {
     const goals =
@@ -94,7 +94,7 @@ router.get("/", async (req, res) => {
 });
 
 
-// POST /api/goals -> create new goal
+// POST /api/goals, create new goal
 router.post("/", async (req, res) => {
   try {
     const parsed = goalCreateSchema.safeParse(req.body);
@@ -148,15 +148,12 @@ router.get("/:id", async (req, res) => {
 });
 
 
-// PUT /api/goals/:id -> update goal by ID
+// PUT /api/goals/:id, update goal by ID
 router.put("/:id", async (req, res) => {
   try {
     const goal = await getAccessibleGoal(req, res, req.params.id);
     if (!goal) return;
-
-
     const parsed = goalUpdateSchema.safeParse(req.body);
-
 
     if (!parsed.success) {
       return res.status(400).json({
@@ -166,9 +163,7 @@ router.put("/:id", async (req, res) => {
       });
     }
 
-
     const updated = await updateGoal(goal._id, parsed.data);
-
 
     return res.status(200).json({
       success: true,
@@ -182,7 +177,7 @@ router.put("/:id", async (req, res) => {
 });
 
 
-// DELETE /api/goals/:id -> delete goal by ID
+// DELETE /api/goals/:id, delete goal by ID
 router.delete("/:id", async (req, res) => {
   try {
     const goal = await getAccessibleGoal(req, res, req.params.id);
