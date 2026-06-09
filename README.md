@@ -20,7 +20,8 @@ This project is a comprehensive Personal Financial Planning System with a Node.j
     - `MONGODB_URI`: Your MongoDB connection string.
     - `JWT_ACCESS_SECRET`: Secret key for short-term access tokens.
     - `JWT_REFRESH_SECRET`: Secret key for long-term refresh tokens.
-    - `RAPID_API_KEY`: (Optional) Your API key from RapidAPI for market data.
+    - `RAPID_API_KEY`: API key from RapidAPI for market data.
+    - `NEWS_API_KEY`: API key from NewsAPI.org for financial news.      
 - Start the server using `npm start`.
 
 ### 3. Frontend Setup
