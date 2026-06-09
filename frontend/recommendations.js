@@ -168,34 +168,60 @@ function displayRecommendations(data) {
   document.getElementById("bondsAllocation").style.width = bonds + "%";
   document.getElementById("bondsPercent").textContent = bonds;
 
-  // Validate and render investment growth graph
-  if (
-    data.growthData &&
-    Array.isArray(data.growthData.years) &&
-    Array.isArray(data.growthData.values)
-  ) {
-    renderInvestmentGrowth(data.growthData);
+  // Validate and store all strategies globally
+  if (data.allStrategies) {
+    window.currentStrategies = data.allStrategies;
+    window.currentSelectedStrategyKey = data.selectedStrategy || "aggressive";
+    
+    // Auto-select the correct radio button based on selectedStrategyKey
+    const stratBtn = document.getElementById(`btn${window.currentSelectedStrategyKey.charAt(0).toUpperCase() + window.currentSelectedStrategyKey.slice(1)}`);
+    if(stratBtn) stratBtn.checked = true;
+
+    updateChartFromState();
   } else {
-    console.error("Invalid growth data: ", data.growthData);
+    console.error("Invalid strategies data: ", data);
     showError("Unable to display investment growth graph due to missing data.");
   }
 }
 
+// Update chart based on currently selected strategy and timeframe
+function updateChartFromState() {
+  if (!window.currentStrategies || !window.currentSelectedStrategyKey) return;
+  const strat = window.currentStrategies[window.currentSelectedStrategyKey];
+  if (!strat || !strat.growthData) return;
+  
+  const timeFrameInputs = document.getElementsByName('timeframe');
+  let selectedTimeframe = "Years";
+  for (const input of timeFrameInputs) {
+    if (input.checked) selectedTimeframe = input.value;
+  }
+  
+  destroyExistingCharts();
+  renderInvestmentGrowth(
+    selectedTimeframe === "Years" ? strat.growthData : strat.monthlyGrowthData, 
+    selectedTimeframe
+  );
+}
+
 // Render investment growth graph
-function renderInvestmentGrowth(data) {
+function renderInvestmentGrowth(data, type = "Years") {
   const ctx = document.getElementById("investmentGrowthChart").getContext("2d");
+  const labels = type === "Years" ? data.years : data.labels;
+  const maxValue = Math.max(...data.values);
+  const suggestedMax = maxValue * 1.1; // Add 10% padding for dynamic Y-axis scaling
+
   new Chart(ctx, {
     type: "line",
     data: {
-      labels: data.years, // Array of years
+      labels: labels, // Array of years or months
       datasets: [
         {
-          label: "Investment Value",
+          label: "Total Value (With Interest)",
           data: data.values, // Array of values
           borderColor: "#007bff",
           backgroundColor: "rgba(0, 123, 255, 0.2)",
           fill: true,
-        },
+        }
       ],
     },
     options: {
@@ -209,14 +235,15 @@ function renderInvestmentGrowth(data) {
         x: {
           title: {
             display: true,
-            text: "Years",
+            text: type,
           },
         },
         y: {
           title: {
             display: true,
-            text: "Value ($)",
+            text: "Value (RM)",
           },
+          suggestedMax: suggestedMax,
         },
       },
     },
@@ -276,8 +303,8 @@ function displayComparison(data) {
       <td><strong>${strategy.name}</strong></td>
       <td>Stocks: ${strategy.allocation.stocks}% | Bonds: ${strategy.allocation.bonds}%</td>
       <td>${(strategy.expectedAnnualReturn * 100).toFixed(1)}%</td>
-      <td>$${strategy.monthlyContribution.toLocaleString()}</td>
-      <td>$${strategy.projectedValue.toLocaleString()}</td>
+      <td>RM ${strategy.monthlyContribution.toLocaleString()}</td>
+      <td>RM ${strategy.projectedValue.toLocaleString()}</td>
     `;
     tableBody.appendChild(row);
   });
@@ -313,4 +340,23 @@ const loadChartJs = async () => {
 document.addEventListener("DOMContentLoaded", () => {
   loadChartJs();
   loadGoals();
+
+  // Timeframe Toggle Listeners
+  const btnYears = document.getElementById("btnYears");
+  const btnMonths = document.getElementById("btnMonths");
+  if (btnYears && btnMonths) {
+    btnYears.addEventListener("change", updateChartFromState);
+    btnMonths.addEventListener("change", updateChartFromState);
+  }
+
+  // Strategy Toggle Listeners
+  const strategyRadios = document.getElementsByName("strategyToggle");
+  strategyRadios.forEach(radio => {
+    radio.addEventListener("change", (e) => {
+      if (e.target.checked) {
+        window.currentSelectedStrategyKey = e.target.value;
+        updateChartFromState();
+      }
+    });
+  });
 });
