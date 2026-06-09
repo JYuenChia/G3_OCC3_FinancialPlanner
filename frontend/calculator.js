@@ -116,7 +116,7 @@ roiForm.addEventListener("submit", function(e) {
 
   resultDiv.innerHTML = `
     <strong>Final Amount:</strong> RM ${finalAmount.toFixed(2)} <br>
-    <strong>Profit (ROI):</strong> RM ${roi.toFixed(2)}
+    <strong>Profit (ROI):</strong> RM ${roi.toFixed(2)} <br>
     <strong>ROI Percentage:</strong> ${roiPercent.toFixed(2)}%
   `;
 
