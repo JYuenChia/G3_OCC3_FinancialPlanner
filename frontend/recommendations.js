@@ -45,8 +45,14 @@ async function loadGoals() {
 
     if (goals.length === 0) {
       showElement("emptyState");
+      if (document.getElementById("noGoalSelectedState")) hideElement("noGoalSelectedState");
+      if (document.getElementById("recommendationsContent")) hideElement("recommendationsContent");
     } else {
       hideElement("emptyState");
+      if (!selectedGoalId) {
+        if (document.getElementById("noGoalSelectedState")) showElement("noGoalSelectedState");
+        if (document.getElementById("recommendationsContent")) hideElement("recommendationsContent");
+      }
     }
   } catch (error) {
     showError("Error loading goals: " + error.message);
@@ -71,6 +77,9 @@ document.getElementById("goalSelect").addEventListener("change", async (e) => {
   selectedGoalId = e.target.value;
 
   if (selectedGoalId) {
+    if (document.getElementById("noGoalSelectedState")) hideElement("noGoalSelectedState");
+    if (document.getElementById("recommendationsContent")) showElement("recommendationsContent");
+    
     // Automatically load recommendations for the selected goal
     loadRecommendations();
     compareStrategies();
@@ -78,7 +87,14 @@ document.getElementById("goalSelect").addEventListener("change", async (e) => {
     toggleIdleIndicator("comparisonContainer", false);
     toggleIdleIndicator("investmentGrowthContainer", false);
   } else {
-    hideElement("emptyState");
+    if (goals.length === 0) {
+      showElement("emptyState");
+      if (document.getElementById("noGoalSelectedState")) hideElement("noGoalSelectedState");
+    } else {
+      hideElement("emptyState");
+      if (document.getElementById("noGoalSelectedState")) showElement("noGoalSelectedState");
+    }
+    if (document.getElementById("recommendationsContent")) hideElement("recommendationsContent");
   }
 });
 function destroyExistingCharts() {
