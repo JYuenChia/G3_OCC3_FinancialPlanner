@@ -104,6 +104,16 @@
           </p>
         </div>
       </div>
+
+      <!-- No Goal Selected State -->
+      <div id="noGoalSelectedState" class="fade-in" style="display: none;">
+        <div class="card p-5 mb-4 shadow-sm" style="border-radius: 1rem; min-height: 300px; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: #ffffff;">
+          <i class="bi bi-bullseye text-primary mb-3" style="font-size: 3rem;"></i>
+          <h5 class="text-muted fw-normal text-center m-0">Select your goal to view recommended strategies.</h5>
+        </div>
+      </div>
+
+      <div id="recommendationsContent" style="display: none;">
       <div class="row">
         <div class="mb-3 col equal-height-col">
           <!-- Recommendations Display -->
@@ -121,7 +131,7 @@
                     <span id="strategyTimeline"></span> years
                   </p>
                   <p>
-                    <strong>Monthly Contribution:</strong> $<span
+                    <strong>Monthly Contribution:</strong> RM <span
                       id="strategyMonthly"
                     ></span>
                   </p>
@@ -136,7 +146,7 @@
                     <span id="strategyReturn"></span>%
                   </p>
                   <p>
-                    <strong>Projected Final Value:</strong> $<span
+                    <strong>Projected Final Value:</strong> RM <span
                       id="strategyProjectedValue"
                     ></span>
                   </p>
@@ -211,7 +221,32 @@
         <div class="col">
           <!-- Investment Growth Graph -->
           <div id="investmentGrowthContainer" class="card p-4 mb-4 idle-indicator">
-            <h5 class="mb-3 text-dark">Investment Growth Over Time</h5>
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+              <h5 class="text-dark mb-0">Investment Growth Over Time</h5>
+              
+              <div class="d-flex flex-wrap gap-2">
+                <!-- Strategy Toggle -->
+                <div class="btn-group btn-group-sm" role="group" aria-label="Strategy toggle">
+                  <input type="radio" class="btn-check" name="strategyToggle" id="btnConservative" value="conservative" autocomplete="off">
+                  <label class="btn btn-outline-success" for="btnConservative">Conservative</label>
+
+                  <input type="radio" class="btn-check" name="strategyToggle" id="btnBalanced" value="balanced" autocomplete="off">
+                  <label class="btn btn-outline-warning" for="btnBalanced">Balanced</label>
+
+                  <input type="radio" class="btn-check" name="strategyToggle" id="btnAggressive" value="aggressive" autocomplete="off" checked>
+                  <label class="btn btn-outline-danger" for="btnAggressive">Aggressive</label>
+                </div>
+
+                <!-- Timeframe Toggle -->
+                <div class="btn-group btn-group-sm" role="group" aria-label="Timeframe toggle">
+                  <input type="radio" class="btn-check" name="timeframe" id="btnYears" value="Years" autocomplete="off" checked>
+                  <label class="btn btn-outline-primary" for="btnYears">Years</label>
+
+                  <input type="radio" class="btn-check" name="timeframe" id="btnMonths" value="Months" autocomplete="off">
+                  <label class="btn btn-outline-primary" for="btnMonths">Months</label>
+                </div>
+              </div>
+            </div>
             <canvas
               id="investmentGrowthChart"
               width="400"
@@ -219,6 +254,7 @@
             ></canvas>
           </div>
         </div>
+      </div>
       </div>
       <!-- Loading State -->
       <div id="loadingSpinner" class="text-center" style="display: none">
