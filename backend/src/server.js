@@ -28,12 +28,10 @@ app.use("/api", apiRoutes);
 async function start() {
   await connectDB();
   
-  // Pre-fetch trend data on startup to avoid 403/429 errors
   try {
     await rapidApiClient.prefetchTrendingData();
   } catch (error) {
     console.warn("Pre-fetch error:", error.message);
-    // Continue startup even if pre-fetch fails
   }
   
   app.listen(port, () => {

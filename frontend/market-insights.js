@@ -1,16 +1,11 @@
-/*
-Market Insights Page - Live Data Integration
-Fetches fully dynamic, single-source real market data from the backend (Yahoo Finance API)
-*/
-
 let marketChart;
-let currentAsset = '^GSPC'; // Defaulting to standard Yahoo Finance S&P 500 Ticker
+let currentAsset = '^GSPC';
 let currentAssetLabel = 'S&P 500 Index';
 
-// --- INITIALIZATION ---
+//INITIALIZATION
 document.addEventListener('DOMContentLoaded', () => {
   checkAuthState();
-  loadCarouselAndDropdownData(); // Combined initialization into one live API data stream array
+  loadCarouselAndDropdownData(); 
   loadNews();
   setupEventListeners();
   updateLastUpdated();
@@ -26,12 +21,11 @@ function checkAuthState() {
   document.querySelectorAll('.guest-only').forEach(el => el.style.display = 'none');
 }
 
-// Fetches live data and dynamically populates BOTH the carousel and the dropdown selection menu!
+// Fetches live data and dynamically populates both the carousel and the dropdown selection menu
 async function loadCarouselAndDropdownData() {
   try {
     showLoadingState('carousel');
     
-    // Fetch live market summary from your backend Yahoo Finance bridge
     const response = await apiClient.getMarketTrendingTickers()
       .catch(err => ({ success: false, data: [], error: err.message }));
     
@@ -47,10 +41,8 @@ async function loadCarouselAndDropdownData() {
       currentAssetLabel = tickers[0].label || 'Asset';
     }
     
-    // initialize the chart with dynamic initial choice
     initChart();
 
-    // DYNAMICALLY POPULATE DROPDOWN
     const assetSelector = document.getElementById('assetSelector');
     if (assetSelector) {
       assetSelector.innerHTML = '';
@@ -67,7 +59,6 @@ async function loadCarouselAndDropdownData() {
       });
     }
 
-    // DYNAMICALLY POPULATE CAROUSEL
     const carouselInner = document.querySelector('.carousel-inner');
     if (!carouselInner) return;
 
@@ -93,14 +84,11 @@ async function loadCarouselAndDropdownData() {
         const col = document.createElement('div');
         col.className = 'col-md-4';
 
-        // Extract numbers from the backend values cleanly
         const changePercentValue = typeof ticker.changePercent === 'number' ? ticker.changePercent : 0;
         const priceValue = typeof ticker.price === 'number' ? ticker.price : 0;
 
-        // =========================================================================
-        // 📊 THREE-WAY COLOR AND SIGN ENGINE
-        // Accounts for Positive (+ Green), Negative (- Red), and Flat (0.00 Gray)
-        // =========================================================================
+
+        // Accounts for Positive (+Green), Negative (-Red), and Flat (0.00 Gray)
         let changeSign = '';
         let colorClass = 'text-muted'; // Neutral gray fallback for flat markets
 
@@ -108,7 +96,7 @@ async function loadCarouselAndDropdownData() {
           changeSign = '+';
           colorClass = 'text-success'; // Market Green
         } else if (changePercentValue < 0) {
-          changeSign = ''; // The negative minus sign is automatically bundled in the number string
+          changeSign = ''; 
           colorClass = 'text-danger'; // Market Red
         }
 
@@ -169,22 +157,21 @@ async function initChart() {
       marketChart.destroy();
     }
     
-    // Dynamic Custom Colors Configuration Maps
     let chartColor = '#1a53bd'; 
     const checkTicker = currentAsset.toLowerCase();
 
     if (checkTicker.includes('gspc')) {
-      chartColor = '#00b4d8'; // S&P 500 Modern Teal Blue
+      chartColor = '#00b4d8'; 
     } else if (checkTicker.includes('btc')) {
-      chartColor = '#f7931a'; // Bitcoin Iconic Amber Orange
+      chartColor = '#f7931a'; 
     } else if (checkTicker.includes('eth')) {
-      chartColor = '#a484e9'; // Ethereum Deep Crystal Purple
+      chartColor = '#a484e9'; 
     } else if (checkTicker.includes('aapl')) {
-      chartColor = '#4a4a4a'; // Apple Tech Sleek Charcoal
+      chartColor = '#4a4a4a'; 
     } else if (checkTicker.includes('gc=f') || checkTicker.includes('gold')) {
-      chartColor = '#e5a93b'; // Gold Premium Metallic Yellow
+      chartColor = '#e5a93b'; 
     } else if (checkTicker.includes('ixic') || checkTicker.includes('nasdaq')) {
-      chartColor = '#4682b4'; // NASDAQ Dynamic Steel Blue
+      chartColor = '#4682b4'; 
     } else {
       chartColor = '#' + Math.floor(Math.random() * 16777215).toString(16);
     }
@@ -241,7 +228,6 @@ async function initChart() {
   }
 }
 
-// Setup event listeners seamlessly to forward drop down changes
 function setupEventListeners() {
   const assetSelector = document.getElementById('assetSelector');
   if (assetSelector) {
@@ -254,11 +240,7 @@ function setupEventListeners() {
   }
 }
 
-/*
-=========================================================================
-🔒 FIXED FEATURE: FINANCIAL NEWS LOGIC (REMOVED [OBJECT OBJECT])
-=========================================================================
-*/
+//FINANCIAL NEWS LOGIC
 async function loadNews() {
   try {
     showLoadingState('news');

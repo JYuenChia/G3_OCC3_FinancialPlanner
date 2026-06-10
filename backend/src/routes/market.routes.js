@@ -4,20 +4,14 @@ const cacheManager = require("../utils/cache-manager");
 
 const router = express.Router();
 
-/**
- * GET /market/ticker/trending
- * FETCHES EVERYTHING THE API PROVIDES LOCALLY
- * No more hardcoded arrays! We pull directly from Yahoo Finance's global summary.
- */
+// GET /market/ticker/trending
 router.get("/market/ticker/trending", async (req, res) => {
   try {
-    // 1. Fetch live summary overview data payload from your backend utility module
     const rawMarketData = await rapidApiClient.getLiveTrendingTickers();
 
-    // 2. Return whatever assets Yahoo Finance returned directly back to the frontend
     res.status(200).json({
       success: true,
-      data: rawMarketData, // Fully dynamic array of objects passed straight through
+      data: rawMarketData,
       timestamp: new Date(),
     });
   } catch (error) {
@@ -29,15 +23,12 @@ router.get("/market/ticker/trending", async (req, res) => {
   }
 });
 
-/**
- * GET /market/ticker/:symbol
- * Fetch current price for a specific asset token via single-source API
- */
+// GET /market/ticker/:symbol
+// Fetch current price for a specific asset token via single-source API
 router.get("/market/ticker/:symbol", async (req, res) => {
   try {
     const { symbol } = req.params;
 
-    // Direct symbol handling. Whatever the user looks up goes straight to Yahoo
     const data = await rapidApiClient.getStockPrice(symbol.toUpperCase());
 
     res.status(200).json({
@@ -54,10 +45,8 @@ router.get("/market/ticker/:symbol", async (req, res) => {
   }
 });
 
-/**
- * GET /market/trends/:symbol?days=7
- * Fetch real historical price timelines for any dynamic asset from Yahoo Finance
- */
+// GET /market/trends/:symbol?days=7
+// Fetch real historical price timelines for any dynamic asset from Yahoo Finance
 router.get("/market/trends/:symbol", async (req, res) => {
   try {
     const { symbol } = req.params;
@@ -82,11 +71,7 @@ router.get("/market/trends/:symbol", async (req, res) => {
   }
 });
 
-/**
- * =========================================================================
- * 🔒 CRITICAL UNTOUCHED FEATURE: FINANCIAL NEWS ROUTE
- * =========================================================================
- */
+//FINANCIAL NEWS ROUTE
 router.get("/market/news", async (req, res) => {
   try {
     const { query = "US stock market", limit = 5 } = req.query;
@@ -106,10 +91,8 @@ router.get("/market/news", async (req, res) => {
   }
 });
 
-/**
- * GET /market/multi?symbols=AAPL,MSFT,BTC-USD
- * Fetch multiple assets concurrently from our single Yahoo engine query list
- */
+// GET /market/multi?symbols=AAPL,MSFT,BTC-USD
+// Fetch multiple assets concurrently from single Yahoo engine query list
 router.get("/market/multi", async (req, res) => {
   try {
     const { symbols = "" } = req.query;

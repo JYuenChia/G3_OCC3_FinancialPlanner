@@ -11,16 +11,12 @@ class CacheManager {
     this.ttlSeconds = ttlSeconds;
   }
 
-  /**
-   * Generate cache key from type and identifier
-   */
+  // Generate cache key from type and identifier
   generateKey(type, identifier) {
     return `${type}:${identifier}`;
   }
 
-  /**
-   * Set cache value with optional custom TTL (in seconds)
-   */
+  //Set cache value with optional custom TTL (in seconds)
   set(type, identifier, value, ttlSeconds = null) {
     const key = this.generateKey(type, identifier);
     this.cache[key] = {
@@ -32,9 +28,7 @@ class CacheManager {
     delete this.inFlight[key];
   }
 
-  /**
-   * Get cache value if not expired
-   */
+  // Get cache value if not expired
   get(type, identifier) {
     const key = this.generateKey(type, identifier);
     if (!this.cache[key]) return null;
@@ -50,47 +44,35 @@ class CacheManager {
     return value;
   }
 
-  /**
-   * Get or store an in-flight promise to prevent duplicate concurrent requests
-   */
+  //Get or store an in-flight promise to prevent duplicate concurrent requests
   getInFlight(type, identifier) {
     return this.inFlight[this.generateKey(type, identifier)];
   }
 
-  /**
-   * Set an in-flight promise
-   */
   setInFlight(type, identifier, promise) {
     this.inFlight[this.generateKey(type, identifier)] = promise;
   }
 
-  /**
-   * Check if cache exists and is valid
-   */
+  // Check if cache exists and is valid
   has(type, identifier) {
     return this.get(type, identifier) !== null;
   }
 
-  /**
-   * Clear specific cache entry
-   */
+  //Clear specific cache entry
+
   clear(type, identifier) {
     const key = this.generateKey(type, identifier);
     delete this.cache[key];
     delete this.inFlight[key];
   }
 
-  /**
-   * Clear all cache
-   */
+  // Clear all cache
   clearAll() {
     this.cache = {};
     this.inFlight = {};
   }
 
-  /**
-   * Get cache age in seconds
-   */
+  //Get cache age in seconds
   getAge(type, identifier) {
     const key = this.generateKey(type, identifier);
     if (!this.cache[key]) return null;
@@ -99,9 +81,7 @@ class CacheManager {
     return (Date.now() - timestamp) / 1000;
   }
 
-  /**
-   * Debug: Get all cache entries
-   */
+  //Debug: Get all cache entries
   getAll() {
     return this.cache;
   }
