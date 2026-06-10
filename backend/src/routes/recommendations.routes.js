@@ -80,7 +80,7 @@ function buildStrategyProjection(
   let currentPrincipal = goal.current_amount;
   const r = def.expectedAnnualReturn / 12;
   const totalMonths = Math.ceil(yearsUntilTarget * 12);
-
+  // Simulate monthly growth to push data points for graph
   for (let m = 1; m <= totalMonths; m++) {
     currentValue = currentValue * (1 + r) + monthlyContribution;
     if (includePrincipal) {
@@ -104,7 +104,7 @@ function buildStrategyProjection(
       }
     }
   }
-
+  // Ensure projected final value is at least the target amount
   const projectedFinalValue = Math.round(
     Math.max(goal.target_amount, currentValue),
   );
@@ -113,6 +113,7 @@ function buildStrategyProjection(
     totalContributions > 0
       ? Number((projectedFinalValue / totalContributions).toFixed(2))
       : null;
+  //handles cases where current amount of savings is sufficient to meet the goal without contributions
   const contributionEfficiencyLabel =
     totalContributions > 0
       ? `${contributionEfficiency.toFixed(2)}x`
@@ -166,7 +167,7 @@ function generateStrategy(goal) {
       ...projection,
     };
   });
-
+  // Calculate contribution efficiency scores for all strategies based on the highest efficiency among them
   const efficiencyValues = Object.values(allStrategies).map(
     (strategy) => strategy.contributionEfficiency,
   );
