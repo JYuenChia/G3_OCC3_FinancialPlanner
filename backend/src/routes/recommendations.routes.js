@@ -285,4 +285,6 @@ router.post("/strategies/compare", requireAuth, async (req, res) => {
   }
 });
 
+router.calculatePMT = calculatePMT;
+router.generateStrategy = generateStrategy;
 module.exports = router;
