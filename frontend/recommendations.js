@@ -45,13 +45,17 @@ async function loadGoals() {
 
     if (goals.length === 0) {
       showElement("emptyState");
-      if (document.getElementById("noGoalSelectedState")) hideElement("noGoalSelectedState");
-      if (document.getElementById("recommendationsContent")) hideElement("recommendationsContent");
+      if (document.getElementById("noGoalSelectedState"))
+        hideElement("noGoalSelectedState");
+      if (document.getElementById("recommendationsContent"))
+        hideElement("recommendationsContent");
     } else {
       hideElement("emptyState");
       if (!selectedGoalId) {
-        if (document.getElementById("noGoalSelectedState")) showElement("noGoalSelectedState");
-        if (document.getElementById("recommendationsContent")) hideElement("recommendationsContent");
+        if (document.getElementById("noGoalSelectedState"))
+          showElement("noGoalSelectedState");
+        if (document.getElementById("recommendationsContent"))
+          hideElement("recommendationsContent");
       }
     }
   } catch (error) {
@@ -77,9 +81,11 @@ document.getElementById("goalSelect").addEventListener("change", async (e) => {
   selectedGoalId = e.target.value;
 
   if (selectedGoalId) {
-    if (document.getElementById("noGoalSelectedState")) hideElement("noGoalSelectedState");
-    if (document.getElementById("recommendationsContent")) showElement("recommendationsContent");
-    
+    if (document.getElementById("noGoalSelectedState"))
+      hideElement("noGoalSelectedState");
+    if (document.getElementById("recommendationsContent"))
+      showElement("recommendationsContent");
+
     // Automatically load recommendations for the selected goal
     loadRecommendations();
     compareStrategies();
@@ -89,12 +95,15 @@ document.getElementById("goalSelect").addEventListener("change", async (e) => {
   } else {
     if (goals.length === 0) {
       showElement("emptyState");
-      if (document.getElementById("noGoalSelectedState")) hideElement("noGoalSelectedState");
+      if (document.getElementById("noGoalSelectedState"))
+        hideElement("noGoalSelectedState");
     } else {
       hideElement("emptyState");
-      if (document.getElementById("noGoalSelectedState")) showElement("noGoalSelectedState");
+      if (document.getElementById("noGoalSelectedState"))
+        showElement("noGoalSelectedState");
     }
-    if (document.getElementById("recommendationsContent")) hideElement("recommendationsContent");
+    if (document.getElementById("recommendationsContent"))
+      hideElement("recommendationsContent");
   }
 });
 function destroyExistingCharts() {
@@ -172,10 +181,12 @@ function displayRecommendations(data) {
   if (data.allStrategies) {
     window.currentStrategies = data.allStrategies;
     window.currentSelectedStrategyKey = data.selectedStrategy || "aggressive";
-    
+
     // Auto-select the correct radio button based on selectedStrategyKey
-    const stratBtn = document.getElementById(`btn${window.currentSelectedStrategyKey.charAt(0).toUpperCase() + window.currentSelectedStrategyKey.slice(1)}`);
-    if(stratBtn) stratBtn.checked = true;
+    const stratBtn = document.getElementById(
+      `btn${window.currentSelectedStrategyKey.charAt(0).toUpperCase() + window.currentSelectedStrategyKey.slice(1)}`,
+    );
+    if (stratBtn) stratBtn.checked = true;
 
     updateChartFromState();
   } else {
@@ -189,17 +200,17 @@ function updateChartFromState() {
   if (!window.currentStrategies || !window.currentSelectedStrategyKey) return;
   const strat = window.currentStrategies[window.currentSelectedStrategyKey];
   if (!strat || !strat.growthData) return;
-  
-  const timeFrameInputs = document.getElementsByName('timeframe');
+
+  const timeFrameInputs = document.getElementsByName("timeframe");
   let selectedTimeframe = "Years";
   for (const input of timeFrameInputs) {
     if (input.checked) selectedTimeframe = input.value;
   }
-  
+
   destroyExistingCharts();
   renderInvestmentGrowth(
-    selectedTimeframe === "Years" ? strat.growthData : strat.monthlyGrowthData, 
-    selectedTimeframe
+    selectedTimeframe === "Years" ? strat.growthData : strat.monthlyGrowthData,
+    selectedTimeframe,
   );
 }
 
@@ -221,7 +232,7 @@ function renderInvestmentGrowth(data, type = "Years") {
           borderColor: "#007bff",
           backgroundColor: "rgba(0, 123, 255, 0.2)",
           fill: true,
-        }
+        },
       ],
     },
     options: {
@@ -248,6 +259,138 @@ function renderInvestmentGrowth(data, type = "Years") {
       },
     },
   });
+}
+
+function animateCountUp(element, targetValue, formatter, duration = 1000) {
+  if (!element) return;
+
+  const startTime = performance.now();
+  const startValue = 0;
+
+  function easeOutCubic(progress) {
+    return 1 - Math.pow(1 - progress, 3);
+  }
+
+  function tick(currentTime) {
+    const progress = Math.min((currentTime - startTime) / duration, 1);
+    const currentValue =
+      startValue + (targetValue - startValue) * easeOutCubic(progress);
+    element.textContent = formatter(currentValue);
+
+    if (progress < 1) {
+      requestAnimationFrame(tick);
+    }
+  }
+
+  requestAnimationFrame(tick);
+}
+
+function animateBarFill(element, targetPercent, duration = 1000) {
+  if (!element) return;
+
+  const clampedTarget = Math.max(0, Math.min(100, targetPercent));
+  const startTime = performance.now();
+
+  function easeOutCubic(progress) {
+    return 1 - Math.pow(1 - progress, 3);
+  }
+
+  function tick(currentTime) {
+    const progress = Math.min((currentTime - startTime) / duration, 1);
+    const currentValue = clampedTarget * easeOutCubic(progress);
+    element.style.width = `${currentValue}%`;
+
+    if (progress < 1) {
+      requestAnimationFrame(tick);
+    }
+  }
+
+  element.style.width = "0%";
+  requestAnimationFrame(tick);
+}
+
+function renderContributionMetrics(strategies) {
+  const container = document.getElementById("comparisonMetrics");
+  if (!container) return;
+
+  const strategyOrder = ["aggressive", "balanced", "conservative"];
+  const orderedStrategies = strategyOrder
+    .map((key) => ({ key, ...strategies[key] }))
+    .filter((strategy) => strategy.name);
+
+  container.innerHTML = orderedStrategies
+    .map(
+      (strategy) => `
+        <div class="strategy-metric-card metric-${strategy.key}">
+          <div class="d-flex justify-content-between align-items-start gap-3 mb-2">
+            <div>
+              <p class="strategy-metric-label mb-1">Contribution Efficiency</p>
+              <h6 class="mb-0 text-dark">${strategy.name}</h6>
+            </div>
+            <span class="strategy-metric-pill">RM ${strategy.monthlyContribution.toLocaleString()}/mo</span>
+          </div>
+          <div class="d-flex align-items-end gap-2 mb-2">
+            <span class="strategy-metric-value" data-efficiency-value="${strategy.key}">${strategy.monthlyContribution === 0 ? "Already on track" : "0.00x"}</span>
+            <span class="strategy-metric-suffix" data-efficiency-suffix="${strategy.key}">${strategy.monthlyContribution === 0 ? "no additional monthly contribution needed" : "projected value per RM contributed"}</span>
+          </div>
+          <div class="strategy-metric-bar" aria-hidden="true">
+            <div
+              class="strategy-metric-bar-fill"
+              data-efficiency-bar="${strategy.key}"
+            ></div>
+          </div>
+          <div class="strategy-metric-meta mt-2">
+            Total contributions: RM ${strategy.totalContributions.toLocaleString()} · Score ${strategy.contributionEfficiencyScore}/100
+          </div>
+        </div>
+      `,
+    )
+    .join("");
+
+  const maxEfficiency = Math.max(
+    ...orderedStrategies.map(
+      (strategy) => strategy.contributionEfficiency || 0,
+    ),
+    0,
+  );
+
+  orderedStrategies.forEach((strategy) => {
+    const valueElement = container.querySelector(
+      `[data-efficiency-value="${strategy.key}"]`,
+    );
+    const suffixElement = container.querySelector(
+      `[data-efficiency-suffix="${strategy.key}"]`,
+    );
+    const barElement = container.querySelector(
+      `[data-efficiency-bar="${strategy.key}"]`,
+    );
+
+    if (strategy.monthlyContribution === 0) {
+      if (valueElement) {
+        valueElement.textContent =
+          strategy.contributionEfficiencyLabel || "Already on track";
+      }
+      if (suffixElement) {
+        suffixElement.textContent = "no additional monthly contribution needed";
+      }
+      animateBarFill(barElement, 100);
+      return;
+    }
+
+    animateCountUp(
+      valueElement,
+      strategy.contributionEfficiency || 0,
+      (value) => `${value.toFixed(2)}x`,
+    );
+    if (suffixElement) {
+      suffixElement.textContent = "projected value per RM contributed";
+    }
+    animateBarFill(barElement, strategy.contributionEfficiencyScore || 0);
+  });
+
+  if (!maxEfficiency) {
+    container.innerHTML = "";
+  }
 }
 // Compare strategies
 async function compareStrategies() {
@@ -291,6 +434,8 @@ function displayComparison(data) {
   document.getElementById("comparisonTimeline").textContent =
     data.timelineYears;
 
+  renderContributionMetrics(data.strategies);
+
   const tableBody = document.getElementById("comparisonTableBody");
   tableBody.innerHTML = "";
 
@@ -300,7 +445,7 @@ function displayComparison(data) {
     const strategy = data.strategies[key];
     const row = document.createElement("tr");
     row.innerHTML = `
-      <td><strong>${strategy.name}</strong></td>
+      <td><strong class="text-dark">${strategy.name}</strong></td>
       <td>Stocks: ${strategy.allocation.stocks}% | Bonds: ${strategy.allocation.bonds}%</td>
       <td>${(strategy.expectedAnnualReturn * 100).toFixed(1)}%</td>
       <td>RM ${strategy.monthlyContribution.toLocaleString()}</td>
@@ -351,7 +496,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Strategy Toggle Listeners
   const strategyRadios = document.getElementsByName("strategyToggle");
-  strategyRadios.forEach(radio => {
+  strategyRadios.forEach((radio) => {
     radio.addEventListener("change", (e) => {
       if (e.target.checked) {
         window.currentSelectedStrategyKey = e.target.value;
