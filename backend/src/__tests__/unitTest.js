@@ -1,5 +1,11 @@
 // Mock uuid first to prevent Jest ESM parsing errors from third-party modules
 jest.mock('uuid', () => ({ v4: () => '1234-5678-mocked-uuid' }));
+jest.mock('../db', () => ({
+  Goal: {},
+  User: {},
+  Calculation: {},
+  RevokedToken: {},
+}));
 
 const { goalCreateSchema } = require("../schemas/goal.schema");
 const recommendationsRouter = require("../routes/recommendations.routes");
@@ -15,7 +21,7 @@ jest.mock("axios");
 describe("Project Modules Unit Tests", () => {
 
   // 1. Goal Module
-  describe.only("Module 1: Goal", () => {
+  describe("Module 1: Goal", () => {
     test("UT-GOAL-01: goalCreateSchema should pass for valid goal data", () => {
       const validGoal = {
         title: "Buy a Car",
@@ -49,7 +55,7 @@ describe("Project Modules Unit Tests", () => {
   });
 
   // 2. Recommendation Module
-  describe.only("Module 2: Recommendation", () => {
+  describe("Module 2: Recommendation", () => {
     test("UT-REC-01: calculatePMT() should calculate correct monthly contribution for normal growth", () => {
       // RM 10000 target, RM 0 current, 5% annual return, 5 years
       const pmt = recommendationsRouter.calculatePMT(10000, 0, 0.05, 5);
@@ -70,7 +76,7 @@ describe("Project Modules Unit Tests", () => {
   });
 
   // 3. Calculator Module
-  describe.only("Module 3: Calculator", () => {
+  describe("Module 3: Calculator", () => {
     test("UT-CALC-01: calculationCreateSchema should pass for valid calculation", () => {
       const validCalc = {
         title: "House Savings",
@@ -100,7 +106,7 @@ describe("Project Modules Unit Tests", () => {
   });
 
   // 4. Auth Module
-  describe.only("Module 4: Auth", () => {
+  describe("Module 4: Auth", () => {
     const userId = "user123";
 
     test("UT-AUTH-01: signAccessToken() should return a valid JWT token", () => {
@@ -124,7 +130,7 @@ describe("Project Modules Unit Tests", () => {
   });
 
   // 5. Market Module
-  describe.only("Module 5: Market", () => {
+  describe("Module 5: Market", () => {
     beforeEach(() => {
       jest.clearAllMocks();
       rapidApiClient.apiKey = "test_key";
@@ -156,7 +162,7 @@ describe("Project Modules Unit Tests", () => {
   });
 
   // 6. User Module
-  describe.only("Module 6: User", () => {
+  describe("Module 6: User", () => {
     test("UT-USER-01: registerSchema should pass for valid user data", () => {
       const validUser = { email: "newuser@example.com", password: "Password123!", full_name: "John Doe" };
       const result = registerSchema.safeParse(validUser);
