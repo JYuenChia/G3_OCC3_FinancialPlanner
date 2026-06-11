@@ -1,6 +1,6 @@
 # Personal Financial Planning System
 
-**Status:** Front-End + Part of Backend
+**Status:** Completed (Full Stack Application)
 
 This project is a comprehensive Personal Financial Planning System with a Node.js/Express backend and a Vanilla JS frontend.
 
@@ -29,6 +29,9 @@ This project is a comprehensive Personal Financial Planning System with a Node.j
 - Open `frontend/login.html` in your browser to start the application.
 - **Note:** Ensure the backend is running so the frontend can communicate with the API.
 
+### 4. Running Tests
+- Navigate to the `backend/` directory.
+- Run `npm test` to execute both the unit and functional test suites via Jest.
 ---
 
 ## Project Structure Overview
@@ -37,8 +40,12 @@ This project is a comprehensive Personal Financial Planning System with a Node.j
 - **Routes:** API endpoints for auth, goals, calculator, market, and recommendations.
 - **Repositories:** Data access layer using Mongoose.
 - **Schemas:** Data validation using Zod and Mongoose.
+- **Middleware:** Authentication and request processing logic.
+- **Utils:** External API clients (RapidAPI) and caching.
+- **Tests:** Unit and functional test suites using Jest (`src/__tests__`).
 
 ### [Frontend](./frontend/)
 - **Static Pages:** HTML files for various features.
 - **API Client:** Centralized communication with the backend (`api-client.js`).
+- **DOM Utilities:** Shared JavaScript helper functions (`dom-utils.js`).
 - **Styles:** Custom CSS for the user interface.
