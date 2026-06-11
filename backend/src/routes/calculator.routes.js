@@ -8,9 +8,9 @@ const router = express.Router();
 router.post("/calculations", requireAuth, async (req, res) => {
   try {
     const userId = req.auth.userId;
-    const { title, calculation } = req.body;
+    const { title, calculation, rate_percent} = req.body;
 
-    if (!title || !calculation) {
+    if (!title || !calculation || rate_percent) {
       return res.status(400).json({ error: "Title and calculation are required" });
     }
 
@@ -33,6 +33,7 @@ router.post("/calculations", requireAuth, async (req, res) => {
       calculation: created,
     });
   } catch (error) {
+    console.log("=== SERVER ERROR LOG ===", error);
     if (error.name === "ZodError") {
       return res.status(400).json({ error: error.errors });
     }
